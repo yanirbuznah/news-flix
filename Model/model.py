@@ -1,7 +1,7 @@
-import json
-
 import numpy as np
 import requests
+
+import tokenizer
 
 scheme = 'url,id,section,time'
 sections = ['football', 'basketball', 'soccer', 'tenis']
@@ -31,12 +31,48 @@ def update_user(user_record, id, new_records):
 
 
 def get_transactions_from_db(k=10, **kwargs):
-    request = {'k':k}
-    for key,value in kwargs.items():
+    request = {'k': k}
+    for key, value in kwargs.items():
         if value is not None:
             request[key] = value
 
-    return requests.post(url=data_accumulator_url,json=request)
+    return requests.post(url=data_accumulator_url, json=request)
 
-res = get_transactions_from_db(10,clickTime=dict(startTime='2022-03-29 16:30:00', endTime='2022-03-29 16:33:00'), url=None, domain=None, section=None, id=1717)
-print(res.content.decode('utf-8'))
+
+def get_ner(req):
+    res = requests.post(url='http://localhost:8090/run_ncrf_model?model_name=token-multi', json=req)
+    # print(res.content.decode('utf-8'))
+    return res.json()[0]
+
+
+def get_req_for_ner(sentence):
+    req = {"sentences": sentence, "tokenized": False}
+    return req
+
+
+def get_entity_from_response(res_dict):
+    tokens = res_dict['tokenized_text']
+    preds = res_dict['ncrf_preds']
+    entities = []
+    i = 0
+    while i < len(tokens):
+        if '-' in preds[i]:
+            ent = tokens[i]
+            i += 1
+            while '-' in preds[i]:
+                ent += ' ' + tokens[i]
+                i += 1
+            entities.append(ent)
+        i += 1
+    return entities
+def tokenize_sentence(sentence):
+    tokens = [x[1]+' ' for x in tokenizer.tokenize(sentence)]
+    sentence = ''.join(tokens)
+    return sentence
+
+# req = get_req_for_ner(text)
+# res_dict = get_ner(req)
+# entities = get_entity_from_response(res_dict)
+# print(entities)
+# res = get_transactions_from_db(10,clickTime=dict(start_time='None', end_time='None'), url=None, domain=None, section=None, id=None)
+# print(res.content.decode('utf-8'))

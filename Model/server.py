@@ -25,9 +25,29 @@ class S(BaseHTTPRequestHandler):
         post_data = self.rfile.read(content_length).decode('utf-8')  # <--- Gets the data itself
         logging.info("POST request,\nPath: %s\nHeaders:\n%s\n\nBody:\n%s\n",
                      str(self.path), str(self.headers), post_data)
+        if self.path == '/':
+            self.post_root(post_data)
+        elif self.path == '/save_entities':
+            self.post_save_entities(post_data)
+        else:
+            self.send_response(code=404)
+
+    def post_save_entities(self,post_data):
+        json_data = ast.literal_eval(post_data)
+        id = json_data['id']
+        sentence = json_data['sentence']
+        sentence = model.tokenize_sentence(sentence)
+        req = model.get_req_for_ner(sentence)
+        res_dict = model.get_ner(req)
+        entities = model.get_entity_from_response(res_dict)
+        print(entities)
+        self._set_response()
+
+
+    def post_root(self, post_data):
         json_data = ast.literal_eval(post_data)
         new_records = model.trans_to_ids(json_data)
-        res = requests.get(preference_db_url,params={'user_id':12345})
+        res = requests.get(preference_db_url, params={'user_id': 12345})
         content = res.content.decode('utf-8')
         content = json.loads(content)
         print(f"from Maiky:{content}")
@@ -37,6 +57,7 @@ class S(BaseHTTPRequestHandler):
         print(t)
         self._set_response()
         self.wfile.write("POST request for {}".format(self.path).encode('utf-8'))
+
 
 
 def run(server_class=HTTPServer, handler_class=S, port=9000):
