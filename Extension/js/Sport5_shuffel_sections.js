@@ -1,7 +1,7 @@
 // Here You can type your custom JavaScript...
 //var parent = content.parentNode;
 //parent.insertBefore(content, parent.firstChild);
-var user_id = 12345;
+var id = 12345; // todo: user id should not be hard-coded. Use cookies instead
 var sections = ["section section-blue", "section section-red", "section section-orange", "section section-grey", "section section-green"];
 
 function shuffle(array) {
@@ -132,6 +132,10 @@ $(document).ready(function () {
     sections.forEach(function (section) {
         curr_section = content.getElementsByClassName(section)
         $(curr_section).on("click", "a", function () {
+                //this == the link that was clicked
+                var href = $(this).attr("href");
+                alert("You're trying to go to " + href + "from section " + section);
+
                 var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function () {
                     console.log("readystate", this.readyState)
@@ -139,22 +143,20 @@ $(document).ready(function () {
                     if (this.readyState == 4 && this.status == 200)
                         console.log("finished connecting server")
                 }
+                // params = "id=" + id + "&domain=" + document.location.host + "&section=" + section + "&href=" + href;
+                params = "id=" + id  + "&section=" + section + "&url=" + href;
 
-                //this == the link that was clicked
-                var href = $(this).attr("href");
-                alert("You're trying to go to " + href + "from section " + section);
-
-                // TODO: replace alert with callback function, to tell the server the user clicked
-                // an article in this section
-                params =
-                    "user_id=" + user_id + "&domain=" + document.location.host + "&section=" + section + "&href=" + href; // todo: user_id not hardcoded
-
-                params = "user_id=99&domain=d&section=s&href=h"
+                // params = "user_id=99&domain=d&section=s&href=h"
                 console.log(`params: ${params}`)
-                url = "http://127.0.0.1:6000/"
-                // xhttp.open("GET", url + "?" + params, true);
+                // url = "http://127.0.0.1:5076/clickwrite"
+                url = "http://127.0.0.1:8080/clickwrite"
+                xhttp.open("GET", url + "?" + params);
 
-                xhttp.open("GET","http://localhost:5076/?user_id=99&domain=d&section=s&href=h");
+
+
+                // xhttp.open("GET","http://localhost:5076/id=99&domain=d&section=s&href=h");
+                // xhttp.open("GET", "http://127.0.0.1:5076/clickwrite?id=99&domain=d&section=s&href=h", true);
+
                 // send Get requeset
                 xhttp.send()
                 console.log("request sent");

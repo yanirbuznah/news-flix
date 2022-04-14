@@ -23,9 +23,12 @@ var urlLearnModel= 'http://localhost:9000/';
 app.get('/clickwrite', (req, res) => {
     console.log("got http get /clickwrite");
     //console.log(req.query.url);
+    console.log(`section: ${req.query.section}\nid: ${req.query.id}\nurl: ${req.query.url}`)
+
+
     if (req.query.section==undefined || req.query.id==undefined || req.query.url==undefined){
       console.log("missing data for clickwrite table in the http get request");
-    } 
+    }
     else if(!Number.isInteger(Number(req.query.id)) || typeof req.query.url != 'string' || typeof req.query.section != 'string'){
       console.log("wrong data for clickwrite table in the http get request");
     }
