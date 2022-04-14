@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "Newsflix",
+  "description": "This extension will Change Your Life",
+  "version": "1.0",
+  "icons": {
+    "16": "/images/world-news-16.png",
+    "48": "/images/world-news-48.png",
+    "128": "/images/world-news-128.png"
+  },
+//  "page_action": {
+//    "default_icon": {
+//      "16": "/images/world-news-16.png",
+//      "48": "/images/world-news-48.png",
+//      "128": "/images/world-news-128.png"
+//    }
+//  },
+
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.sport5.co.il/"
+      ],
+      "js": [
+        "/js/jquery-3.3.1.js",
+        "/js/Sport5_shuffel_sections.js"
+      ]
+    }
+  ]
+}
