@@ -6,7 +6,7 @@ import requests
 scheme = 'url,id,section,time'
 sections = ['football', 'basketball', 'soccer', 'tenis']
 
-data_accumulator_url = 'http://localhost:1234/informationrequest'
+data_accumulator_url = 'http://localhost:8080/informationrequest'
 
 
 def make_random_transactions():
@@ -36,7 +36,7 @@ def get_transactions_from_db(k=10, **kwargs):
         if value is not None:
             request[key] = value
 
-    return requests.post(url=data_accumulator_url,data=request)
+    return requests.post(url=data_accumulator_url,json=request)
 
-# res = get_transactions_from_db(10,start_time=None, end_time=None, url=None, domain=None, section=None, id=None)
-# print(res.content.decode('utf-8'))
+res = get_transactions_from_db(10,clickTime=dict(startTime='2022-03-29 16:30:00', endTime='2022-03-29 16:33:00'), url=None, domain=None, section=None, id=1717)
+print(res.content.decode('utf-8'))
