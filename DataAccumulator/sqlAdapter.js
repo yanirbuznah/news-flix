@@ -1,15 +1,20 @@
 const { response } = require('express');
 var mysql = require('mysql');
 var tableCols= {id:"id",url:"url", section:"section", clickTime:"clickTime"};
+const sqlConnector = require('./sqlConnector')
 //const { stringify } = require('querystring');
 function openConnectionAndQueryFromSQLDB(query,queryResultHandler){
+
+  // sqlConnector.sendQueryToDB(query).then((value)=>{
+  //   queryResultHandler(value)
+  // })
     //Debugging:
-    var con = mysql.createConnection({
-        port: "3306",
-        user: "root",
-        database: "clickdocumentation",
-        password: "tomtom9"
-    });
+    // var con = mysql.createConnection({
+    //     port: "3306",
+    //     user: "root",
+    //     database: "clickdocumentation",
+    //     password: "tomtom9"
+    // });
     //While working in container:
     // var con = mysql.createConnection({
     //     host: "host.docker.internal",
@@ -19,43 +24,39 @@ function openConnectionAndQueryFromSQLDB(query,queryResultHandler){
     //     password: "tomtom9"
     // });
 
-    con.connect(function(err) {
-        if (err) throw err;
-        console.log("Connected!"); //deleteme
-        con.query(query, queryResultHandler);
+    // con.connect(function(err) {
+    //     if (err) throw err;
+    //     console.log("Connected!"); //deleteme
+    //     con.query(query, queryResultHandler);
 
-    // con.end(function(err){
-    //             if(err){
-    //                 throw err;
-    //             }
-    //             console.log('Close the database connection');
-    // })
-
-});
+//});
     
 }
 
 function writeLineToClickTable(id, url, section){
-    openConnectionAndQueryFromSQLDB("INSERT INTO click_table values("+JSON.stringify(id) +","
-                                        +JSON.stringify(url) +","
-                                        +JSON.stringify(section) +",now()) ;",
-                                    function (err, result) {
-                                            if (err) throw err;
-                                            console.log("1 record inserted");
-                                            });
-
+    sqlConnector.sendQueryToDB("INSERT INTO click_table values("+JSON.stringify(id) +","
+    +JSON.stringify(url) +","
+    +JSON.stringify(section) +",now()) ;")
   }
 
 
 function getKLatestLinesFromClickTable(k){
-    var query_result=new Promise((resolve, reject) => {
-        openConnectionAndQueryFromSQLDB("SELECT * FROM click_table order by clickTime DESC LIMIT "+JSON.stringify(k)+";",
-        function (err, result) {
-            if (err) throw err;
-            //console.log(result);
-            resolve(result);
-            })
-    });
+  var query_result=new Promise((resolve, reject) => {
+  sqlConnector.sendQueryToDB("SELECT * FROM click_table order by clickTime DESC LIMIT "+JSON.stringify(k)+";").then(
+    function (value) {
+      resolve(value.rows);
+      }
+  )
+});
+
+    // var query_result=new Promise((resolve, reject) => {
+    //     openConnectionAndQueryFromSQLDB(,
+    //     function (err, result) {
+    //         if (err) throw err;
+    //         //console.log(result);
+    //         resolve(result);
+    //         })
+    // });
     //purpose:
     //return generalQueryServerRequest({k:k})
 
@@ -102,13 +103,11 @@ function parsingRequestConditions(json){
 
 function generalQueryServerRequest(reqJson){
     var query_result=new Promise((resolve, reject) => {
-        openConnectionAndQueryFromSQLDB("SELECT * FROM click_table WHERE 1=1"+parsingRequestConditions(reqJson)
-                                        +" order by clickTime DESC LIMIT "+reqJson["k"].toString()+";",
-        function (err, result) {
-            if (err) throw err;
-            //console.log(result);
-            resolve(result);
-            })
+      sqlConnector.sendQueryToDB("SELECT * FROM click_table WHERE 1=1"+parsingRequestConditions(reqJson)
+                                        +" order by clickTime DESC LIMIT "+reqJson["k"].toString()+";").then(
+                                        function (value) {
+                                          resolve(value.rows);
+                                          })
     });
 
     //This function returns Promise!
