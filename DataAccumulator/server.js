@@ -2,7 +2,6 @@ const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const sqlAdapter = require('./sqlAdapter')
 const express = require('express')
 const app = express()
-const port = 8080
 app.use(express.json()) //Very important!!! need for yanir post req?
 // var bodyParser = require('body-parser')
 // app.use(bodyParser.urlencoded({ extended: true }));
@@ -11,14 +10,14 @@ app.use(express.json()) //Very important!!! need for yanir post req?
 
 //LearnModel Parameters
 const k=2;
-var counter=0;//When debugging mode it appears this variable got 0 every http request
+var counter=2;//When debugging mode it appears this variable got 0 each http request
 var timeInterval2MsgForLearnModel=30000
 //Container mode
 //var urlLearnModel= 'http://host.docker.internal:9000/'; //host.docker.internal – This resolves to the outside host.
 //Debugging mode:
 var urlLearnModel= 'http://localhost:9000/';
 
-//url should be: http://localhost:8080/clickwrite?id=100&url=x&section=x 
+//url for example: http://localhost:8080/clickwrite?id=100&url=x&section=x 
 //x are variables
 app.get('/clickwrite', (req, res) => {
     console.log("got http get /clickwrite");
@@ -45,13 +44,10 @@ app.get('/clickwrite', (req, res) => {
       }
     }
   })
-/*  
-app.get('/', (req, res) => {
-res.send('Hello World!')
-})*/
 
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port} build3`)
+
+app.listen((process.env.PORT || 3000), () => {
+    console.log(`DataAccumulator app listening on port `)
     });
 
 function sendHttpPostReq(url,body){
@@ -72,6 +68,7 @@ setInterval(function(){
   if(counter>0){
     result_b = sqlAdapter.getKLatestLinesFromClickTable(counter);
     result_b.then((value)=>{
+      console.log(value);//DEBUG
       sendHttpPostReq(urlLearnModel,value);
     })
     counter=0;
