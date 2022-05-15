@@ -69,7 +69,7 @@ function rearrangePage() {
 
 var ready_2_shuffle = false;
 
-(function connectServer() {
+function connectServer(uid) {
     console.log("******CONNECTING SERVER******")
     var xhttp = new XMLHttpRequest();
     // set callback for when connection with prefernces server is ready
@@ -108,21 +108,45 @@ var ready_2_shuffle = false;
     }
 
     // prepare requset to the server
-    params = "user_id=12345&domain=" + document.location.host;  // todo: user_id not hardcoded
-    url = "http://127.0.0.1:5000"
+    console.log(`uid= ${uid}`)
+    params = "user_id=" + uid + "&domain=" + document.location.host;  // todo: user_id not hardcoded
+    url = "http://127.0.0.1:3000"
     xhttp.open("GET", url + "?" + params, false);
 
-    // send Get requeset
+    // send Get request
     xhttp.send()
     console.log(" send finished ")
-})()
+}
 
-// link clicks tracker
-// $(document).on("click", "a", function() {
-//     //this == the link that was clicked
-//     var href = $(this).attr("href");
-//     alert("You're trying to go to " + href);
-// });
+function getRandomToken() {
+    // E.g. 8 * 32 = 256 bits token
+    var randomPool = new Uint8Array(32);
+    crypto.getRandomValues(randomPool);
+    var hex = '';
+    for (var i = 0; i < randomPool.length; ++i) {
+        hex += randomPool[i].toString(16);
+    }
+    // E.g. db18458e2782b2b77e36769c569e263a53885a9944dd0a861e5064eac16f1a
+    console.log(`id token = ${hex}`)
+    return hex;
+}
+
+(function get_user_id() {
+    console.log("get_user_id")
+    chrome.storage.sync.get('userid', function (items) {
+        var userid = items.userid;
+        if (userid) {
+            console.log(`userid=${userid}`)
+            connectServer(userid)
+        } else {
+            userid = getRandomToken();
+            chrome.storage.sync.set({userid: userid}, function () {
+                connectServer(userid)
+            });
+        }
+    });
+    return uid
+})();
 
 $(document).ready(function () {
     var content = document.getElementById('content');
@@ -144,14 +168,14 @@ $(document).ready(function () {
                         console.log("finished connecting server")
                 }
                 // params = "id=" + id + "&domain=" + document.location.host + "&section=" + section + "&href=" + href;
-                params = "id=" + id  + "&section=" + section + "&url=" + href;
+                params = "id=" + id + "&section=" + section + "&url=" + href;
 
                 // params = "user_id=99&domain=d&section=s&href=h"
                 console.log(`params: ${params}`)
                 // url = "http://127.0.0.1:5076/clickwrite"
                 url = "http://127.0.0.1:8080/clickwrite"
+                // url = "https://limitless-sea-45427.herokuapp.com/clickwrite"
                 xhttp.open("GET", url + "?" + params);
-
 
 
                 // xhttp.open("GET","http://localhost:5076/id=99&domain=d&section=s&href=h");
