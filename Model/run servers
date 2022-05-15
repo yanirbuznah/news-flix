@@ -1,0 +1,6 @@
+run ./yap api from ~/Desktop/yap/yapproj/src/yap
+
+run uvicorn api_main:app --port 8090 from ~/Desktop/nerh/nemo
+
+
+check if its possible to combine the two

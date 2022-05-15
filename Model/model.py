@@ -6,7 +6,7 @@ import tokenizer
 scheme = 'url,id,section,time'
 sections = ['football', 'basketball', 'soccer', 'tenis']
 
-data_accumulator_url = 'http://localhost:8080/informationrequest'
+data_accumulator_url = 'http://limitless-sea-45427.herokuapp.com/informationrequest'
 
 
 def make_random_transactions():
@@ -39,40 +39,84 @@ def get_transactions_from_db(k=10, **kwargs):
     return requests.post(url=data_accumulator_url, json=request)
 
 
-def get_ner(req):
-    res = requests.post(url='http://localhost:8090/run_ncrf_model?model_name=token-multi', json=req)
+def get_ner(reqs):
+    text = []
+    preds = []
+    for req in reqs:
+        # response.append(requests.post(url=data_accumulator_url, json=r))
+        res = requests.post(url='http://localhost:8090/run_ncrf_model?model_name=token-multi', json=req)
+        text.append(res.json()[0]['tokenized_text'])
+        preds.append(res.json()[0]['ncrf_preds'])
+        # response.append(res.json()[0])
     # print(res.content.decode('utf-8'))
-    return res.json()[0]
+    text = [word for sublist in text for word in sublist]
+    preds = [pred for sublist in preds for pred in sublist]
+    response = {'tokens': text, 'preds': preds}
+    return response
 
 
 def get_req_for_ner(sentence):
-    req = {"sentences": sentence, "tokenized": False}
-    return req
+    reqs = []
+    sentence = sentence.split()
+    sent = ''
+    for i,word in enumerate(sentence):
+        sent += word + ' '
+        if i % 200 == 0 and i != 0:
+            reqs.append({"sentences": sent, "tokenized": False})
+            sent = ''
+    if len(sent) > 0:
+        reqs.append({"sentences": sent, "tokenized": False})
+    # reqs.append({"sentences": sent, "tokenized": False})
+    # req = {"sentences": sentence, "tokenized": False}
+    return reqs
 
 
 def get_entity_from_response(res_dict):
-    tokens = res_dict['tokenized_text']
-    preds = res_dict['ncrf_preds']
+    tokens = res_dict['tokens']
+    preds = res_dict['preds']
     entities = []
     i = 0
     while i < len(tokens):
         if '-' in preds[i]:
             ent = tokens[i]
             i += 1
-            while '-' in preds[i]:
+            while i < len(tokens) and '-' in preds[i]:
                 ent += ' ' + tokens[i]
                 i += 1
             entities.append(ent)
         i += 1
     return entities
+
+
 def tokenize_sentence(sentence):
-    tokens = [x[1]+' ' for x in tokenizer.tokenize(sentence)]
+    tokens = [x[1] + ' ' for x in tokenizer.tokenize(sentence)]
     sentence = ''.join(tokens)
     return sentence
 
-# req = get_req_for_ner(text)
-# res_dict = get_ner(req)
-# entities = get_entity_from_response(res_dict)
+
+
+# import requests
+# text = 'גנן גידל דגן בגן'
+# localhost_yap = "http://localhost:8000/yap/heb/joint"
+# data = '{{"text": "{}  "}}'.format(text).encode('utf-8')  # input string ends with two space characters
+# headers = {'content-type': 'application/json'}
+# response = requests.get(url=localhost_yap, data=data, headers=headers)
+# json_response = response.json()
+
+
+
+# text = 'לא הרבה יודעים, אבל כהנא צחק. '
+def get_entities_from_text(text):
+
+    sentence = tokenize_sentence(text)
+    reqs = get_req_for_ner(sentence)
+    res_dict = get_ner(reqs)
+    entities = get_entity_from_response(res_dict)
+    # print(entities)
+    return entities
+# entities = get_ner_from_text('לא הרבה יודעים אבל כהנא צחק')
 # print(entities)
-# res = get_transactions_from_db(10,clickTime=dict(start_time='None', end_time='None'), url=None, domain=None, section=None, id=None)
-# print(res.content.decode('utf-8'))
+
+
+res = get_transactions_from_db(10,clickTime=None, url=None, domain=None, section=None, id=None)
+print(res.content.decode('utf-8'))

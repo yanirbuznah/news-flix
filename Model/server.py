@@ -2,12 +2,14 @@ import ast
 import json
 import logging
 from http.server import BaseHTTPRequestHandler, HTTPServer
+
 # import requests
 import requests
 
 import model
 
 preference_db_url = 'http://localhost:3000/get_user'
+
 
 class S(BaseHTTPRequestHandler):
     def _set_response(self):
@@ -32,7 +34,7 @@ class S(BaseHTTPRequestHandler):
         else:
             self.send_response(code=404)
 
-    def post_save_entities(self,post_data):
+    def post_save_entities(self, post_data):
         json_data = ast.literal_eval(post_data)
         id = json_data['id']
         sentence = json_data['sentence']
@@ -42,7 +44,6 @@ class S(BaseHTTPRequestHandler):
         entities = model.get_entity_from_response(res_dict)
         print(entities)
         self._set_response()
-
 
     def post_root(self, post_data):
         json_data = ast.literal_eval(post_data)
@@ -59,7 +60,6 @@ class S(BaseHTTPRequestHandler):
         self.wfile.write("POST request for {}".format(self.path).encode('utf-8'))
 
 
-
 def run(server_class=HTTPServer, handler_class=S, port=9000):
     logging.basicConfig(level=logging.INFO)
     server_address = ('', port)
@@ -73,9 +73,14 @@ def run(server_class=HTTPServer, handler_class=S, port=9000):
     logging.info('Stopping httpd...\n')
 
 
-if __name__ == '__main__':
+def main():
     from sys import argv
+
     if len(argv) == 2:
         run(port=int(argv[1]))
     else:
         run()
+
+
+if __name__ == "__main__":
+    main()
