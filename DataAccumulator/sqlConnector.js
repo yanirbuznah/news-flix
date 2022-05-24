@@ -22,10 +22,6 @@ async function sendQueryToDB(q) {
   return now;
 }
 
-// (async () => {
-// await clientDemo().then() ;
-// })();
 
-//
 module.exports.sendQueryToDB = sendQueryToDB
 

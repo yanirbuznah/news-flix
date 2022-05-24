@@ -10,18 +10,17 @@ app.use(express.json()) //Very important!!! need for yanir post req?
 
 //LearnModel Parameters
 const k=2;
-var counter=2;//When debugging mode it appears this variable got 0 each http request
+var counter=2;//When debugging mode it start with >0
 var timeInterval2MsgForLearnModel=30000
 //Container mode
 //var urlLearnModel= 'http://host.docker.internal:9000/'; //host.docker.internal – This resolves to the outside host.
 //Debugging mode:
-var urlLearnModel= 'http://localhost:9000/';
+var urlLearnModel= 'http://localhost:9000/'; //should be yanir's real url
 
 //url for example: http://localhost:8080/clickwrite?id=100&url=x&section=x 
 //x are variables
 app.get('/clickwrite', (req, res) => {
     console.log("got http get /clickwrite");
-    //console.log(req.query.url);
     console.log(`section: ${req.query.section}\nid: ${req.query.id}\nurl: ${req.query.url}`)
 
 
@@ -32,7 +31,7 @@ app.get('/clickwrite', (req, res) => {
       console.log("wrong data for clickwrite table in the http get request");
     }
     else{
-      console.log("required data was found")
+      //console.log("required data was found")
       sqlAdapter.writeLineToClickTable(req.query.id, req.query.url, req.query.section);
       counter++;
       if(counter>=k){
@@ -64,11 +63,11 @@ function sendHttpPostReq(url,body){
 
 //Setting task for empty the virtual buffer every timeInterval2MsgForLearnModel time
 setInterval(function(){
-  console.log("counter is: "+counter);
+  //console.log("counter is: "+counter);
   if(counter>0){
     result_b = sqlAdapter.getKLatestLinesFromClickTable(counter);
     result_b.then((value)=>{
-      console.log(value);//DEBUG
+      //console.log(value);//DEBUG
       sendHttpPostReq(urlLearnModel,value);
     })
     counter=0;
@@ -79,12 +78,11 @@ setInterval(function(){
 
 
 app.post('/informationrequest', (req, res) => {
-  //
   console.log(req.body);
   var result = sqlAdapter.generalQueryServerRequest(req.body);
   result.then((value)=>{
-    res.send(value);
-    //sendHttpPostReq(urlLearnModel,value);
+    //console.log(value);//DEBUG 
+    res.json(value);
   })
 })
 

@@ -7,24 +7,16 @@ app.use(express.json()) //Very important!!!
 const port = 9000
 
 app.post('/', (req, res) => {
-    console.log(req.body);
+    console.log(JSON.stringify(req.body));
 })
 
 function sendHttpPostReq(url,body){
     const xHR = new XMLHttpRequest();
-    //TODO: maybe to add function handler for error cases (can help with examples from GitHub)
-    //
-    xHR.addEventListener( "load", function(event) {
-        //alert( event.target.responseText );
-        // const obj = JSON.parse(event.target.responseText);
-        // var htmlToDisplay = jsonToElement(obj);
-        // var t = document.querySelector("iframe").contentWindow.document;
-        // t.open();
-        // t.write(htmlToDisplay);
-        // t.close();
-        console.log(event)
-
-        } );
+    xHR.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            console.log(this.responseText);
+       }
+    };
 
         // Define what happens in case of error
     xHR.addEventListener( "error", function( event ) {
@@ -44,9 +36,21 @@ app.listen(port, () => {
     console.log(`Example app listening on port ${port} build3`)
     });
 
-// sendHttpPostReq('http://localhost:8080/informationrequest',{k: "2",clickTime:{startTime:"2022-03-29 16:30:00",
-//  endTime:"2022-03-29 16:33:00"}});
 
- sendHttpPostReq('http://localhost:8080/informationrequest',{k: "2",clickTime:
- {startTime:"2022-03-29 16:30:00"
- }, section : "Black"});
+//example requets for the server:
+
+
+
+ sendHttpPostReq('http://localhost:3000/informationrequest',{k: "2",clickTime:
+ {startTime:"2022-05-24 16:00:00"
+ }});
+
+
+ sendHttpPostReq('http://localhost:3000/informationrequest',{k: "2",clickTime:
+ {startTime:"2022-05-24 15:00:00", endTime:"2022-05-24 16:00:00"
+ }});
+
+
+ sendHttpPostReq('http://localhost:3000/informationrequest',{k: "2",clickTime:
+ {startTime:"2022-05-24 15:00:00", endTime:"2022-05-24 17:00:00"
+ },id:"333", url:"yarin"});
