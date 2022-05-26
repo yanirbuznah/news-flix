@@ -6,7 +6,7 @@ const sqlConnector = require('./sqlConnector')
 function writeLineToClickTable(id, url, section){
   q= "INSERT INTO click_table (Id, Url, Section, Clicktime) values('"+id +"','"
   +url+"','"
-  +section+",now()) ;"
+  +section+"',now()) ;"
     sqlConnector.sendQueryToDB(q);
   }
 
