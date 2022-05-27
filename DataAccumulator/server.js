@@ -3,6 +3,8 @@ const sqlAdapter = require('./sqlAdapter')
 const express = require('express')
 const app = express()
 app.use(express.json()) //Very important!!! need for yanir post req?
+const cors = require('cors')
+app.use(cors)
 // var bodyParser = require('body-parser')
 // app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -46,7 +48,7 @@ app.get('/clickwrite', (req, res) => {
 
 
 app.listen((process.env.PORT || 3000), () => {
-    console.log(`DataAccumulator app listening on port `)
+    console.log(`DataAccumulator app listening on port 3000`)
     });
 
 function sendHttpPostReq(url,body){
