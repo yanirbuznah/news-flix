@@ -1,8 +1,9 @@
 // Here You can type your custom JavaScript...
 //var parent = content.parentNode;
 //parent.insertBefore(content, parent.firstChild);
-var id = 12345; // todo: user id should not be hard-coded. Use cookies instead
+var id = null; // todo: user id should not be hard-coded. Use cookies instead
 var sections = ["section section-blue", "section section-red", "section section-orange", "section section-grey", "section section-green"];
+
 
 function shuffle(array) {
     let currentIndex = array.length, randomIndex;
@@ -72,7 +73,7 @@ var ready_2_shuffle = false;
 function connectServer(uid) {
     console.log("******CONNECTING SERVER******")
     var xhttp = new XMLHttpRequest();
-    // set callback for when connection with prefernces server is ready
+    // set callback for when connection with preferences server is ready
     xhttp.onreadystatechange = function () {
         console.log("readystate", this.readyState)
         console.log("status: ", this.status)
@@ -118,35 +119,82 @@ function connectServer(uid) {
     console.log(" send finished ")
 }
 
-function getRandomToken() {
-    // E.g. 8 * 32 = 256 bits token
-    var randomPool = new Uint8Array(32);
-    crypto.getRandomValues(randomPool);
-    var hex = '';
-    for (var i = 0; i < randomPool.length; ++i) {
-        hex += randomPool[i].toString(16);
-    }
-    // E.g. db18458e2782b2b77e36769c569e263a53885a9944dd0a861e5064eac16f1a
-    console.log(`id token = ${hex}`)
-    return hex;
-}
+// function getRandomToken() {
+//     // E.g. 8 * 32 = 256 bits token
+//     var randomPool = new Uint8Array(32);
+//     crypto.getRandomValues(randomPool);
+//     var hex = '';
+//     for (var i = 0; i < randomPool.length; ++i) {
+//         hex += randomPool[i].toString(16);
+//     }
+//     console.log(`id token = ${hex}`)
+//     return hex;
+// }
+
+// async function create_new_user() {
+//     var xhr = new XMLHttpRequest();
+//     xhr.onreadystatechange = function () {
+//         console.log("readystate", this.readyState)
+//         console.log("status: ", this.status)
+//         if (this.readyState == 4 && this.status == 200) {
+//             console.log("finished connecting server from create_new_user()")
+//             new_id = parseInt(xhr.responseText)
+//
+//         }
+//     }
+//
+//     url = "http://127.0.0.1:3000/create_user"
+//     xhr.open("POST", url + "?" + params);
+//     await xhr.send()
+//     console.log("request sent from create_new_user()");
+// }
 
 (function get_user_id() {
-    console.log("get_user_id")
+    console.log("get_user_id");
+    // *** clear id from cache *** //
+    chrome.storage.sync.clear(function () {
+        console.log("removed last id")
+    });
     chrome.storage.sync.get('userid', function (items) {
         var userid = items.userid;
-        if (userid) {
+        if (userid) {   // existing user
             console.log(`userid=${userid}`)
             connectServer(userid)
-        } else {
-            userid = getRandomToken();
-            chrome.storage.sync.set({userid: userid}, function () {
-                connectServer(userid)
-            });
+        } else { // new user - generate id and create document in the DB
+            console.log(`no user id yet`)
+            // create_new_user().then(function (data) {
+            //     console.log(data)
+            //     userid = data;
+            //     // userid = getRandomToken(); // TODO: if user has no ID yet, send an http request
+            //     console.log(`the new user id ${userid}`)
+            //     chrome.storage.sync.set({userid: userid}, function () {
+            //         connectServer(userid)
+            //     });
+            // });
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                console.log("readystate", this.readyState)
+                console.log("status: ", this.status)
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log("finished connecting server from create_new_user()")
+                    console.log(this.responseText)
+                    new_id = this.responseText
+                    console.log(`the new user id ${new_id}`)
+                    chrome.storage.sync.set({userid: new_id});
+                }
+            }
+            domain = document.location.host
+            // domain = "www.sport5.co.il"
+            console.log(`domain: ${domain}`)
+            // url = "http://127.0.0.1:3000/create_user"
+            url = "http://127.0.0.1:5000"   // TODO: test with real server
+            xhr.open("POST", url + '?' + 'domain=' + domain);
+            xhr.send()
+            console.log("request sent from create_new_user()");
         }
-    });
-    return uid
-})();
+    })
+})()
+
 
 $(document).ready(function () {
     var content = document.getElementById('content');
@@ -155,7 +203,7 @@ $(document).ready(function () {
     // track clicks
     sections.forEach(function (section) {
         curr_section = content.getElementsByClassName(section)
-        $(curr_section).on("click", "a", function () {
+        $(curr_section).on("click", "a", async function () {
                 //this == the link that was clicked
                 var href = $(this).attr("href");
                 alert("You're trying to go to " + href + "from section " + section);
@@ -167,7 +215,14 @@ $(document).ready(function () {
                     if (this.readyState == 4 && this.status == 200)
                         console.log("finished connecting server")
                 }
-                // params = "id=" + id + "&domain=" + document.location.host + "&section=" + section + "&href=" + href;
+
+                var p = new Promise(function (resolve, reject) {
+                    chrome.storage.sync.get({"userid": true}, function (items) {
+                        resolve(items.userid);
+                    })
+                });
+                id = await p;
+                console.log(`id after async ${id}`);
                 params = "id=" + id + "&section=" + section + "&url=" + href;
 
                 // params = "user_id=99&domain=d&section=s&href=h"
