@@ -1,7 +1,9 @@
 const express = require('express')
 const app = express()
+const cors = require('cors')
+app.use(cors())
 app.use(express.json())
-const port = 3000
+const port = 4000
 const { ObjectId } = require('mongodb');
 const pass = "Maccabi1977"
 var collection;
@@ -62,8 +64,6 @@ async function connetToDB() {
 connetToDB().catch(console.dir);
 
 async function writeToDB(jsonToDB) {
-  console.log("in mongo root");
-
   try {
     const p = await col.insertOne(jsonToDB);
     //debug
@@ -139,13 +139,15 @@ app.get('/get_user_sections_counter', (req, res) => {
 })
 
 async function updateDB(update_JSON) {
-  console.log("user_id",update_JSON._id)
+  console.log("_id",update_JSON._id)
   try {
-    var stringId = update_JSON.user_id
-    delete update_JSON.user_id;
+    var stringId = update_JSON._id
+    delete update_JSON._id;
+    // var stringId = update_JSON.user_id
+    // delete update_JSON.user_id;
     //console.log("after deleting - ", update_JSON);
     //console.log("after deleting - stringId - ",ObjectId(stringId));
-    const myDoc = await col.updateOne({'user_id':parseInt(stringId)},{$set: update_JSON})
+    const myDoc = await col.updateOne({'_id':parseInt(stringId)},{$set: update_JSON})
 
     //console.log("return",myDoc);
     //debug
@@ -165,17 +167,18 @@ app.post('/set_user_sections_counter_and_preferences', (req, res) => {
   //console.log(req.body.sections_counter);
   updateDB(req.body).then(function (data) 
   {
-   // console.log("return state: \n",data);
-    //res.send(data);
   });
-  //res.send(req.body);
-  // console.log(req.body.sections_counter);
-  // console.log(req.body.preferences);
-  // doc_returned = readFieldFromDB(req.query.user_id, "sections_counter").then(function (data) 
-  //   {
-  //     console.log("id of new db tuple is: \n",data);
-  //     res.send(data);
-  //   });
+})
+
+app.post('/creat_user', async (req, res) => {
+  //console.log(req.body.sections_counter);
+  //TODO: set the preferences as the deafult order
+  new_user_JSON = { "sections_counter":[0,0,0,0,0],
+                    "preferences": [-1,-1,-1,-1,-1],
+                    "domain":req.body.domain
+                  }
+  id = await writeToDB(req.body)
+  res.send(JSON.stringify({_id : id}))
 })
 
 app.listen(port, () => {

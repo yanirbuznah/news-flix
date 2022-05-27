@@ -3,7 +3,7 @@ const cors = require('cors')
 const axios = require('axios')
 const app = express()
 const port = 3000
-
+app.use(express.json())
 app.use(cors())
 
 app.get('/', (request, response) => {
@@ -37,6 +37,21 @@ app.get('/', (request, response) => {
         })
 
 })
+
+app.post('/creat_user', async (req, res) => {
+    console.log(req.body)
+    let domain_req = req.body.domain
+    console.log("domain", domain_req)
+    preferences_proxy_url = 'http://localhost:4000/creat_user'
+    let payload = { domain: domain_req };
+
+    let res_id = await axios.post(preferences_proxy_url, payload);
+
+    let id = res_id.id;
+    
+    console.log(id);
+    res.send(JSON.stringify({_id : id}))
+  })
 
 app.listen(port, () => {
     console.log(`Reorder server listening on port ${port}`)
