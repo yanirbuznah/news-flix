@@ -122,7 +122,7 @@ finally {
 
 app.get('/get_user', (req, res) => {
   console.log(req.query.user_id);
-  doc_returned = readFromDB(req.query.user_id).then(function (data) 
+  doc_returned = readFromDB(req.query._id).then(function (data) 
     {
       console.log("id of new db tuple is: ",JSON.stringify(data));
       res.send(JSON.stringify(data));
@@ -177,7 +177,7 @@ app.post('/creat_user', async (req, res) => {
                     "preferences": [-1,-1,-1,-1,-1],
                     "domain":req.body.domain
                   }
-  id = await writeToDB(req.body)
+  id = await writeToDB(new_user_JSON)
   res.send(JSON.stringify({_id : id}))
 })
 
