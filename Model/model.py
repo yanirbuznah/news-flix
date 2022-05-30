@@ -19,7 +19,7 @@ def trans_to_ids(trans):
         id = t['id']
         if id not in trans_per_id.keys():
             trans_per_id[id] = []
-        trans_per_id[id].append((t['url'], t['section'], t['clickTime']))
+        trans_per_id[id].append((t['url'], t['section'], t['clicktime']))
     return trans_per_id
 
 
@@ -117,6 +117,6 @@ def get_entities_from_text(text):
 # entities = get_ner_from_text('לא הרבה יודעים אבל כהנא צחק')
 # print(entities)
 
-
-res = get_transactions_from_db(10,clickTime=None, url=None, domain=None, section=None, id=None)
-print(res.content.decode('utf-8'))
+#
+# res = get_transactions_from_db(10,clickTime=None, url=None, domain=None, section=None, id=None)
+# print(res.content.decode('utf-8'))

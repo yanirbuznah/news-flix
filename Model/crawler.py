@@ -1,21 +1,28 @@
+import sched, time
 import logging
 import re
+import threading
 from urllib.parse import urljoin
+
 import bs4
 import requests
 from bs4 import BeautifulSoup
-import time
+
 import model
 
 logging.basicConfig(
     format='%(asctime)s %(levelname)s:%(message)s',
     level=logging.INFO)
-
+entities = {}
 
 class Crawler:
 
     def __init__(self, urls=[]):
         self.visited_urls = []
+        self.urls_to_visit = urls
+        self.sections = {'main': []}
+
+    def update_urls(self, urls):
         self.urls_to_visit = urls
 
     def download_url(self, url):
@@ -52,15 +59,15 @@ class Crawler:
                 links.append(urljoin(url, path))
         sections['main'] = links
 
-    def add_url_to_visit(self, url):
-        if url not in self.visited_urls and url not in self.urls_to_visit:
-            self.urls_to_visit.append(url)
-
-    def crawl(self, url):
+    def get_sections(self, url):
         html = self.download_url(url)
         sections = self.get_linked_urls(url, html)
+        return sections
+
+    def crawl(self):
+
         articles_per_section = {}
-        for section, links in sections.items():
+        for section, links in self.sections.items():
             articles_per_section[section] = []
             for link in links:
                 article = self.get_article_from_url(link)
@@ -105,41 +112,63 @@ class Crawler:
             url = self.urls_to_visit.pop(0)
             logging.info(f'Crawling: {url}')
             try:
-                return self.crawl(url)
+                return self.crawl()
             except Exception:
                 logging.exception(f'Failed to crawl: {url}')
             finally:
                 self.visited_urls.append(url)
 
+    def website_was_changed(self):
+        # html = self.download_url('https://www.sport5.co.il/')
+        sections = self.get_sections('https://www.sport5.co.il/')
+        for section, links in sections.items():
+            for link in links:
+                if link not in self.sections[section]:
+                    self.sections = sections
+                    return True
+        return False
+
+
+
 def get_entities_from_articles(articles_per_section):
     entities = {}
     for section, articles in articles_per_section.items():
         section_entities = []
-        for i,article in enumerate(articles):
+        for i, article in enumerate(articles):
             section_entities.append(model.get_entities_from_text(article))
         entities[section] = section_entities
     return entities
 
 
-def main():
-    # measure the time
-    start = time.time()
 
 
-    # init crawler
-    crawler = Crawler(urls=['https://www.sport5.co.il/'])
 
-    # run crawler
-    articles = crawler.run()
+def main_loop(sc, crawler, no_changed_time=0):
+    global entities
+    # no_changed_time = 0
+    if crawler.website_was_changed():
 
-    print('crawling time:', time.time() - start)
+        crawler.update_urls(['https://www.sport5.co.il/'])
 
-    start = time.time()
-    # get entities
-    entities = get_entities_from_articles(articles)
-    print(entities)
+        # run crawler
+        logging.info('Crawling...')
+        articles = crawler.run()
+        logging.info('Crawling finished')
 
-    print('entities time:', time.time() - start)
 
-if __name__ == '__main__':
-    main()
+        # get entities
+        logging.info('Getting entities...')
+        entities = get_entities_from_articles(articles)
+        logging.info('Getting entities finished')
+        print(entities)
+
+
+    else:
+        no_changed_time += 1
+        logging.info(f'no change for {no_changed_time} minutes')
+    sc.enter(60, 1, main_loop, (sc, crawler,no_changed_time))
+
+
+s = sched.scheduler(time.time, time.sleep)
+s.enter(60, 1, main_loop, (s, Crawler()))
+threading.Thread(target=s.run).start()

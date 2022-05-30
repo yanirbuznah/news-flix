@@ -2,13 +2,13 @@ import ast
 import json
 import logging
 from http.server import BaseHTTPRequestHandler, HTTPServer
-
+import crawler
 # import requests
 import requests
 
 import model
 
-preference_db_url = 'http://localhost:3000/get_user'
+preference_db_url = 'http://localhost:4000/get_user'
 
 
 class S(BaseHTTPRequestHandler):
@@ -28,6 +28,7 @@ class S(BaseHTTPRequestHandler):
         logging.info("POST request,\nPath: %s\nHeaders:\n%s\n\nBody:\n%s\n",
                      str(self.path), str(self.headers), post_data)
         if self.path == '/':
+
             self.post_root(post_data)
         elif self.path == '/save_entities':
             self.post_save_entities(post_data)
@@ -52,9 +53,9 @@ class S(BaseHTTPRequestHandler):
         content = res.content.decode('utf-8')
         content = json.loads(content)
         print(f"from Maiky:{content}")
-        print(f"from Tom: {new_records[12345]}")
+        print(f"from Tom: {new_records[478]}")
         # x = {'football': 4, 'tenis': 2, 'basketball': 1}
-        t = model.update_user(content, 12345, new_records)
+        t = model.update_user(content, 478, new_records)
         print(t)
         self._set_response()
         self.wfile.write("POST request for {}".format(self.path).encode('utf-8'))
@@ -67,6 +68,7 @@ def run(server_class=HTTPServer, handler_class=S, port=9000):
     logging.info('Starting httpd...\n')
     try:
         httpd.serve_forever()
+
     except KeyboardInterrupt:
         pass
     httpd.server_close()
