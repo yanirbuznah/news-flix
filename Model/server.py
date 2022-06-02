@@ -49,13 +49,13 @@ class S(BaseHTTPRequestHandler):
     def post_root(self, post_data):
         json_data = ast.literal_eval(post_data)
         new_records = model.trans_to_ids(json_data)
-        res = requests.get(preference_db_url, params={'user_id': 12345})
+        res = requests.get(preference_db_url, params={'_id': '6245ced50a0519cc2f8e8029'})
         content = res.content.decode('utf-8')
         content = json.loads(content)
         print(f"from Maiky:{content}")
-        print(f"from Tom: {new_records[478]}")
+        print(f"from Tom: {new_records['777abc']}")
         # x = {'football': 4, 'tenis': 2, 'basketball': 1}
-        t = model.update_user(content, 478, new_records)
+        t = model.update_user(content, '777abc', new_records)
         print(t)
         self._set_response()
         self.wfile.write("POST request for {}".format(self.path).encode('utf-8'))

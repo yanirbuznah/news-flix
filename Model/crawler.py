@@ -169,6 +169,11 @@ def main_loop(sc, crawler, no_changed_time=0):
     sc.enter(60, 1, main_loop, (sc, crawler,no_changed_time))
 
 
-s = sched.scheduler(time.time, time.sleep)
-s.enter(60, 1, main_loop, (s, Crawler()))
-threading.Thread(target=s.run).start()
+
+class Runner:
+    def __init__(self):
+        self.crawler = Crawler()
+        self.scheduler = sched.scheduler(time.time, time.sleep)
+        self.scheduler.enter(60, 1, main_loop, (self.scheduler, self.crawler))
+        threading.Thread(target=self.scheduler.run).start()
+

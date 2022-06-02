@@ -67,7 +67,7 @@ async function writeToDB(jsonToDB) {
   try {
     const p = await col.insertOne(jsonToDB);
     //debug
-    const myDoc = await col.findOne({_id: p.insertedId});
+    const myDoc = await col.findOne({_id: ObjectId(p.insertedId)});
     console.log(myDoc);
     //debug
     return (p.insertedId);
@@ -85,9 +85,9 @@ finally {
 }
 
 async function readFromDB(user_id_to_find) {
-  console.log("user_id",parseInt(user_id_to_find))
+  console.log("user_id",user_id_to_find)
   try {
-    const myDoc = await col.findOne({user_id: parseInt(user_id_to_find)});
+    const myDoc = await col.findOne({_id: ObjectId(user_id_to_find)});
     console.log("return",myDoc);
     //debug
     return (myDoc);
@@ -105,7 +105,7 @@ finally {
 async function readFieldFromDB(user_id_to_find, field) {
   //console.log("user_id readFieldFromDB",parseInt(user_id_to_find), field)
   try {
-    const myDoc = await col.findOne({user_id: parseInt(user_id_to_find)}, {projection: {_id: 0, [field]: 1}});
+    const myDoc = await col.findOne({_id: ObjectId(user_id_to_find)}, {projection: {_id: 0, [field]: 1}});
     //console.log("return",myDoc);
     //debug
     return (myDoc);
@@ -130,8 +130,8 @@ app.get('/get_user', (req, res) => {
 })
 
 app.get('/get_user_sections_counter', (req, res) => {
-  console.log(req.query.user_id);
-  doc_returned = readFieldFromDB(req.query.user_id, "sections_counter").then(function (data) 
+  console.log(req.query._id);
+  doc_returned = readFieldFromDB(req.query._id, "sections_counter").then(function (data)
     {
       //console.log("id of new db tuple is: \n",data);
       res.send(data);
@@ -147,7 +147,7 @@ async function updateDB(update_JSON) {
     // delete update_JSON.user_id;
     //console.log("after deleting - ", update_JSON);
     //console.log("after deleting - stringId - ",ObjectId(stringId));
-    const myDoc = await col.updateOne({'_id':parseInt(stringId)},{$set: update_JSON})
+    const myDoc = await col.updateOne({'_id':ObjectId(stringId)},{$set: update_JSON})
 
     //console.log("return",myDoc);
     //debug
