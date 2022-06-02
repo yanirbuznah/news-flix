@@ -28,9 +28,14 @@ function orderSectionsByOrderList(order_list) {
     ordered_sections = []
     list_len = order_list.length
     for (var i = 0; i < list_len; i++) {
+        console.log("from orderSectionsByOrderList", typeof order_list[i])
+        if (order_list[i] == -1) {
+            ordered_sections = sections
+            break
+        }
         ordered_sections.push(sections[order_list[i]])
     }
-    console.log(ordered_sections)
+    console.log("ordered sections", ordered_sections)
     sections = ordered_sections
 }
 
@@ -85,6 +90,8 @@ function connectServer(uid) {
             console.log(`response text: ${sections_order}`)
             // order = sections_order.preferences
             order = this.responseText
+            order = JSON.parse(order)
+            console.log(`typeof order: ${typeof order}`)
             console.log(`responseText: ${order}`)
 
             // convert order to indices list
@@ -92,9 +99,10 @@ function connectServer(uid) {
             for (var i = 0; i < order.length; i++) {
                 indices_list.push(order[i])
             }
-            console.log(indices_list)
+            console.log(`indices_list: ${indices_list}`)
 
-            orderSectionsByOrderList(indices_list)  // update sections' order
+            // orderSectionsByOrderList(indices_list)  // update sections' order
+            orderSectionsByOrderList(order)  // update sections' order
 
             // rearrange page according to the updated order,
             // or set ready_2_shuffle to be true in case document
@@ -111,7 +119,7 @@ function connectServer(uid) {
     // prepare requset to the server
     console.log(`uid= ${uid}`)
     params = "user_id=" + uid + "&domain=" + document.location.host;  // todo: user_id not hardcoded
-    url = "http://127.0.0.1:3000"
+    url = "http://127.0.0.1:7000"
     xhttp.open("GET", url + "?" + params, false);
 
     // send Get request
@@ -151,10 +159,10 @@ function connectServer(uid) {
 
 (function get_user_id() {
     console.log("get_user_id");
-    // *** clear id from cache *** //
-    chrome.storage.sync.clear(function () {
-        console.log("removed last id")
-    });
+    // // *** clear id from cache *** //
+    // chrome.storage.sync.clear(function () {
+    //     console.log("removed last id")
+    // });
     chrome.storage.sync.get('userid', function (items) {
         var userid = items.userid;
         if (userid) {   // existing user
@@ -201,10 +209,13 @@ $(document).ready(function () {
     console.log("location:", document.location.host)
 
     // track clicks
+    console.log("sections:", sections)
     sections.forEach(function (section) {
+        console.log("section:", section)
         curr_section = content.getElementsByClassName(section)
         $(curr_section).on("click", "a", async function () {
                 //this == the link that was clicked
+                console.log("attaching click event listener")
                 var href = $(this).attr("href");
                 alert("You're trying to go to " + href + "from section " + section);
 
@@ -223,13 +234,14 @@ $(document).ready(function () {
                 });
                 id = await p;
                 console.log(`id after async ${id}`);
-                params = "id=" + id + "&section=" + section + "&url=" + href;
+                heb_id = "שדגכדגכ"
+                params = "id=" + id + "&section=" + section + "&url=" + href + "&clickedheader=" + "כותרת מרגשת";
+                // params = "id=" + heb_id + "&section=" + section + "&url=" + href;
 
                 // params = "user_id=99&domain=d&section=s&href=h"
                 console.log(`params: ${params}`)
                 // url = "http://127.0.0.1:5076/clickwrite"
-                url = "http://127.0.0.1:8080/clickwrite"
-                // url = "https://limitless-sea-45427.herokuapp.com/clickwrite"
+                url = "https://limitless-sea-45427.herokuapp.com/clickwrite"
                 xhttp.open("GET", url + "?" + params);
 
 
