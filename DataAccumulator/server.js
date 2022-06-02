@@ -4,7 +4,7 @@ const express = require('express')
 const app = express()
 app.use(express.json()) //Very important!!! need for yanir post req?
 const cors = require('cors')
-app.use(cors)
+app.use(cors())
 // var bodyParser = require('body-parser')
 // app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -12,7 +12,7 @@ app.use(cors)
 
 //LearnModel Parameters
 const k=2;
-var counter=2;//When debugging mode it start with >0
+var counter=0;//When debugging mode it start with >0
 var timeInterval2MsgForLearnModel=30000
 //Container mode
 //var urlLearnModel= 'http://host.docker.internal:9000/'; //host.docker.internal – This resolves to the outside host.
@@ -29,11 +29,12 @@ app.get('/clickwrite', (req, res) => {
     if (req.query.section==undefined || req.query.id==undefined || req.query.url==undefined){
       console.log("missing data for clickwrite table in the http get request");
     }
-    else if(!Number.isInteger(Number(req.query.id)) || typeof req.query.url != 'string' || typeof req.query.section != 'string'){
+    else if(typeof req.query.id != 'string' || typeof req.query.url != 'string' || typeof req.query.section != 'string'){
       console.log("wrong data for clickwrite table in the http get request");
     }
     else{
-      //console.log("required data was found")
+      console.log("required data was found")
+      console.log(JSON.stringify(req.query.id) + " "+JSON.stringify(req.query.url) + " "+JSON.stringify(req.query.section));
       sqlAdapter.writeLineToClickTable(req.query.id, req.query.url, req.query.section);
       counter++;
       if(counter>=k){
