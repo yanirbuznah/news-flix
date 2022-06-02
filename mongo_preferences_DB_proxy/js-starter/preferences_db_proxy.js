@@ -121,7 +121,7 @@ finally {
 }
 
 app.get('/get_user', (req, res) => {
-  console.log(req.query.user_id);
+  console.log(req.query._id);
   doc_returned = readFromDB(req.query._id).then(function (data) 
     {
       console.log("id of new db tuple is: ",JSON.stringify(data));
