@@ -182,6 +182,6 @@ app.post('/creat_user', async (req, res) => {
   res.send(JSON.stringify({_id : id}))
 })
 
-app.listen(port, () => {
+app.listen((process.env.PORT || port), () => {
   console.log(`Example app listening on port ${port}`)
 })

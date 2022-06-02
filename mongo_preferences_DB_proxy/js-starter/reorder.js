@@ -58,6 +58,6 @@ app.post('/creat_user', async (req, res) => {
     res.send(id)
   })
 
-app.listen(port, () => {
+app.listen((process.env.PORT || port), () => {
     console.log(`Reorder server listening on port ${port}`)
 })
