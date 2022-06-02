@@ -8,7 +8,8 @@ import requests
 
 import model
 
-preference_db_url = 'http://localhost:4000/get_user'
+preference_db_url = 'http://localhost:4000'
+# preference_db_url_update = 'http://localhost:4000/get_user'
 
 
 class S(BaseHTTPRequestHandler):
@@ -43,20 +44,38 @@ class S(BaseHTTPRequestHandler):
         req = model.get_req_for_ner(sentence)
         res_dict = model.get_ner(req)
         entities = model.get_entity_from_response(res_dict)
-        print(entities)
+        # print(entities)
         self._set_response()
+
+    def get_users_preferences(self,records):
+        contents = []
+        for id, record in records.items():
+            res = requests.get(preference_db_url +'/get_user', params={'_id': id})
+            content = res.content.decode('utf-8')
+            if content == '-1': # no user found
+                continue
+            content = json.loads(content)
+            contents.append(content)
+        return contents
+
+    def update_users_preferences(self, updated_users):
+        for user in updated_users:
+            print(user)
+            res = requests.post(preference_db_url + '/set_user_sections_counter_and_preferences', json=user)
+            print(res.content.decode('utf-8'))
 
     def post_root(self, post_data):
         json_data = ast.literal_eval(post_data)
         new_records = model.trans_to_ids(json_data)
-        res = requests.get(preference_db_url, params={'_id': '6245ced50a0519cc2f8e8029'})
-        content = res.content.decode('utf-8')
-        content = json.loads(content)
-        print(f"from Maiky:{content}")
-        print(f"from Tom: {new_records['777abc']}")
+        old_preferences = self.get_users_preferences(new_records)
+        # x = model.get_transactions_from_db(2,id='6298b7bd9d4f0a5cb9c51665')
+        # json_data = json.loads(x.content.decode('utf-8'))
+        new_records = model.trans_to_ids(json_data)
+        # print(f"from Maiky:{old_preferences}")
+        # print(f"from Tom: {new_records['6298b7bd9d4f0a5cb9c51665']}")
         # x = {'football': 4, 'tenis': 2, 'basketball': 1}
-        t = model.update_user(content, '777abc', new_records)
-        print(t)
+        updated_users = model.update_users(old_preferences, new_records)
+        self.update_users_preferences(updated_users)
         self._set_response()
         self.wfile.write("POST request for {}".format(self.path).encode('utf-8'))
 
