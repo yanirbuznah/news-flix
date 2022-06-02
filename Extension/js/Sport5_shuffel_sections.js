@@ -119,7 +119,7 @@ function connectServer(uid) {
     // prepare requset to the server
     console.log(`uid= ${uid}`)
     params = "user_id=" + uid + "&domain=" + document.location.host;  // todo: user_id not hardcoded
-    url = "http://127.0.0.1:7000"
+    url = "https://reorder.herokuapp.com/"
     xhttp.open("GET", url + "?" + params, false);
 
     // send Get request
@@ -194,7 +194,7 @@ function connectServer(uid) {
             domain = document.location.host
             // domain = "www.sport5.co.il"
             console.log(`domain: ${domain}`)
-            url = "http://127.0.0.1:7000/creat_user"
+            url = "https://reorder.herokuapp.com/creat_user"
             // url = "http://127.0.0.1:5000"   // TODO: test with real server
             xhr.open("POST", url + '?' + 'domain=' + domain);
             xhr.send()
