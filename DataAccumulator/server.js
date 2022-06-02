@@ -12,7 +12,7 @@ app.use(cors())
 
 //LearnModel Parameters
 const k=2;
-var counter=0;//When debugging mode it start with >0
+var counter=2;//When debugging mode it start with >0
 var timeInterval2MsgForLearnModel=30000
 //Container mode
 //var urlLearnModel= 'http://host.docker.internal:9000/'; //host.docker.internal – This resolves to the outside host.
@@ -22,6 +22,7 @@ var urlLearnModel= 'http://localhost:9000/'; //should be yanir's real url
 //url for example: http://localhost:8080/clickwrite?id=100&url=x&section=x 
 //x are variables
 app.get('/clickwrite', (req, res) => {
+    console.log(req.query.id)
     console.log("got http get /clickwrite");
     console.log(`section: ${req.query.section}\nid: ${req.query.id}\nurl: ${req.query.url}`)
 
@@ -29,13 +30,20 @@ app.get('/clickwrite', (req, res) => {
     if (req.query.section==undefined || req.query.id==undefined || req.query.url==undefined){
       console.log("missing data for clickwrite table in the http get request");
     }
-    else if(typeof req.query.id != 'string' || typeof req.query.url != 'string' || typeof req.query.section != 'string'){
+    else if (req.query.clickedheader==undefined){
+      req.query.clickedheader='header was not sent';
+    }
+    else if(typeof req.query.id != 'string' || typeof req.query.url != 'string' || typeof req.query.section != 'string' || typeof req.query.clickedheader != 'string'){
       console.log("wrong data for clickwrite table in the http get request");
     }
+    else if(req.query.id.length>sqlAdapter.idMaxLength || req.query.url.length > sqlAdapter.urlMaxLength
+       || req.query.section.length >sqlAdapter.sectionMaxLength || req.query.clickedheader.length > sqlAdapter.clickedheaderMaxLength ){
+        console.log("some data passed his length limits");
+       }
     else{
       console.log("required data was found")
-      console.log(JSON.stringify(req.query.id) + " "+JSON.stringify(req.query.url) + " "+JSON.stringify(req.query.section));
-      sqlAdapter.writeLineToClickTable(req.query.id, req.query.url, req.query.section);
+      console.log(JSON.stringify(req.query.id) + " "+JSON.stringify(req.query.url) + " "+JSON.stringify(req.query.section)+" "+JSON.stringify(req.query.clickedheader));
+      sqlAdapter.writeLineToClickTable(req.query.id, req.query.url, req.query.section, req.query.clickedheader);
       counter++;
       if(counter>=k){
         counter=0;
@@ -49,7 +57,7 @@ app.get('/clickwrite', (req, res) => {
 
 
 app.listen((process.env.PORT || 3000), () => {
-    console.log(`DataAccumulator app listening on port 3000`)
+    console.log(`DataAccumulator app listening on port (if local=3000)`)
     });
 
 function sendHttpPostReq(url,body){

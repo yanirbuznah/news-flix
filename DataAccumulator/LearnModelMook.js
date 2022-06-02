@@ -43,16 +43,24 @@ app.listen(port, () => {
 
 //https://limitless-sea-45427.herokuapp.com/clickwrite?id=478&url=www.sport5.co.il&section=section%20orange
 
- sendHttpPostReq('http://limitless-sea-45427.herokuapp.com/informationrequest',{k: "2",clickTime:
- {startTime:"2022-05-24 16:00:00"
- }});
+//  sendHttpPostReq('http://limitless-sea-45427.herokuapp.com/informationrequest',{k: "2",clickTime:
+//  {startTime:"2022-05-24 16:00:00"
+//  }});
 
 
- sendHttpPostReq('http://limitless-sea-45427.herokuapp.com/informationrequest',{k: "2",clickTime:
- {startTime:"2022-05-24 15:00:00", endTime:"2022-05-24 16:00:00"
- }});
+//  sendHttpPostReq('http://limitless-sea-45427.herokuapp.com/informationrequest',{k: "2",clickTime:
+//  {startTime:"2022-05-24 15:00:00", endTime:"2022-05-24 16:00:00"
+//  }});
+
+//sendHttpPostReq('http://limitless-sea-45427.herokuapp.com/informationrequest',{k: "2",id: "777abc"});
 
 
- sendHttpPostReq('http://limitless-sea-45427.herokuapp.com/informationrequest',{k: "2",clickTime:
- {startTime:"2022-05-26 15:00:00", endTime:"2022-05-26 15:12:10"
- },id:"200", url:"doron"});
+//  sendHttpPostReq('http://limitless-sea-45427.herokuapp.com/informationrequest',{k: "2",clickTime:
+//  {startTime:"2022-05-26 15:00:00", endTime:"2022-05-26 15:12:10"
+//  },id:"200", url:"doron"});
+
+
+//debug mode:
+
+
+//sendHttpPostReq('http://localhost:3000/informationrequest',{k: "2",id: "6298b7bd9d4f0a5cb9c51665"});
