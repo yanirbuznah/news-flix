@@ -194,8 +194,8 @@ function connectServer(uid) {
             domain = document.location.host
             // domain = "www.sport5.co.il"
             console.log(`domain: ${domain}`)
-            // url = "http://127.0.0.1:3000/create_user"
-            url = "http://127.0.0.1:5000"   // TODO: test with real server
+            url = "http://127.0.0.1:7000/creat_user"
+            // url = "http://127.0.0.1:5000"   // TODO: test with real server
             xhr.open("POST", url + '?' + 'domain=' + domain);
             xhr.send()
             console.log("request sent from create_new_user()");
