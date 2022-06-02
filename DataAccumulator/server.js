@@ -56,7 +56,7 @@ app.get('/clickwrite', (req, res) => {
   })
 
 
-app.listen( 3000, () => {
+  app.listen((process.env.PORT || 3000), () => {
     console.log(`DataAccumulator app listening on port (if local=3000)`)
     });
 
