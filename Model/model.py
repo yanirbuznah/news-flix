@@ -114,15 +114,6 @@ def tokenize_sentence(sentence):
 
 
 
-# import requests
-# text = 'גנן גידל דגן בגן'
-# localhost_yap = "http://localhost:8000/yap/heb/joint"
-# data = '{{"text": "{}  "}}'.format(text).encode('utf-8')  # input string ends with two space characters
-# headers = {'content-type': 'application/json'}
-# response = requests.get(url=localhost_yap, data=data, headers=headers)
-# json_response = response.json()
-
-
 
 # text = 'לא הרבה יודעים, אבל כהנא צחק. '
 def get_entities_from_text(text):

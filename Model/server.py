@@ -8,7 +8,7 @@ import requests
 
 import model
 
-preference_db_url = 'http://localhost:4000'
+preference_db_url = 'http://preferences-db-proxy.herokuapp.com'
 # preference_db_url_update = 'http://localhost:4000/get_user'
 
 
@@ -96,11 +96,12 @@ def run(server_class=HTTPServer, handler_class=S, port=9000):
 
 def main():
     from sys import argv
-
-    if len(argv) == 2:
-        run(port=int(argv[1]))
-    else:
-        run()
+    import os
+    # if len(argv) == 2:
+    port = int(os.environ.get("PORT",'5000'))
+    run(port=port)
+    # else:
+        # run()
 
 
 if __name__ == "__main__":

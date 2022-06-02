@@ -12,12 +12,12 @@ app.use(cors())
 
 //LearnModel Parameters
 const k=2;
-var counter=2;//When debugging mode it start with >0
+var counter=0;//When debugging mode it start with >0
 var timeInterval2MsgForLearnModel=30000
 //Container mode
 //var urlLearnModel= 'http://host.docker.internal:9000/'; //host.docker.internal – This resolves to the outside host.
 //Debugging mode:
-var urlLearnModel= 'http://localhost:9000/'; //should be yanir's real url
+var urlLearnModel= 'http://newsflix-model.herokuapp.com/'; //should be yanir's real url
 
 //url for example: http://localhost:8080/clickwrite?id=100&url=x&section=x 
 //x are variables
