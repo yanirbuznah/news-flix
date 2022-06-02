@@ -13,7 +13,7 @@ app.get('/', (request, response) => {
     console.log("domain", domain)
     console.log("sending response")
 
-    preferences_proxy_url = 'http://localhost:4000/get_user'
+    preferences_proxy_url = 'https://preferences-db-proxy.herokuapp.com/get_user'
     params = "_id=" + user_id;
     // + "&" + "domain=" + domain
     console.log("params", params)
@@ -44,7 +44,7 @@ app.post('/creat_user', async (req, res) => {
     // let domain_req = req.body.domain
     let domain_req = req.query.domain
     console.log("domain", domain_req)
-    preferences_proxy_url = 'http://localhost:4000/creat_user'
+    preferences_proxy_url = 'https://preferences-db-proxy.herokuapp.com/creat_user'
     let payload = { domain: domain_req };
 
     let res_id = await axios.post(preferences_proxy_url, payload);
