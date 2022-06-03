@@ -40,10 +40,6 @@ function orderSectionsByOrderList(order_list) {
 }
 
 function rearrangePage() {
-
-    console.log("Jqueryyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy333")
-    // console.log(content.find_element_by_xpath('//div[@id="content"]/div'));
-    // divs = content.getElementsByTagName("div");
     var content = document.getElementById('content');
     console.log(content.getElementsByClassName("center"))
     console.log(content)
@@ -127,35 +123,6 @@ function connectServer(uid) {
     console.log(" send finished ")
 }
 
-// function getRandomToken() {
-//     // E.g. 8 * 32 = 256 bits token
-//     var randomPool = new Uint8Array(32);
-//     crypto.getRandomValues(randomPool);
-//     var hex = '';
-//     for (var i = 0; i < randomPool.length; ++i) {
-//         hex += randomPool[i].toString(16);
-//     }
-//     console.log(`id token = ${hex}`)
-//     return hex;
-// }
-
-// async function create_new_user() {
-//     var xhr = new XMLHttpRequest();
-//     xhr.onreadystatechange = function () {
-//         console.log("readystate", this.readyState)
-//         console.log("status: ", this.status)
-//         if (this.readyState == 4 && this.status == 200) {
-//             console.log("finished connecting server from create_new_user()")
-//             new_id = parseInt(xhr.responseText)
-//
-//         }
-//     }
-//
-//     url = "http://127.0.0.1:3000/create_user"
-//     xhr.open("POST", url + "?" + params);
-//     await xhr.send()
-//     console.log("request sent from create_new_user()");
-// }
 
 (function get_user_id() {
     console.log("get_user_id");
@@ -170,15 +137,6 @@ function connectServer(uid) {
             connectServer(userid)
         } else { // new user - generate id and create document in the DB
             console.log(`no user id yet`)
-            // create_new_user().then(function (data) {
-            //     console.log(data)
-            //     userid = data;
-            //     // userid = getRandomToken(); // TODO: if user has no ID yet, send an http request
-            //     console.log(`the new user id ${userid}`)
-            //     chrome.storage.sync.set({userid: userid}, function () {
-            //         connectServer(userid)
-            //     });
-            // });
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
                 console.log("readystate", this.readyState)
@@ -215,9 +173,32 @@ $(document).ready(function () {
         curr_section = content.getElementsByClassName(section)
         $(curr_section).on("click", "a", async function () {
                 //this == the link that was clicked
+                clicked_element = this
                 console.log("attaching click event listener")
-                var href = $(this).attr("href");
-                alert("You're trying to go to " + href + "from section " + section);
+                console.log("this:", this)
+                var href = $(clicked_element).attr("href");
+                alert("You're trying to go to " + href + "from " + section);
+
+                // title = this.text
+                // console.log(`title: ${title}`)
+                class_name = clicked_element.parentElement.className;
+                tag_name = clicked_element.parentElement.tagName;
+                if (class_name == "writer" || tag_name == "SPAN") {
+                    clicked_element = clicked_element.parentElement
+                }
+                console.log("class name:", class_name)
+                var parent = clicked_element.parentElement.parentElement;
+                console.log("parent: ", parent)
+                console.log("p_children list: ", parent.getElementsByTagName("p"))
+                subtitle = parent.getElementsByTagName("p")[0].outerText;
+                console.log("subtitle", subtitle)
+
+                console.log("h2_children list:", parent.getElementsByTagName("h2"))
+                title = parent.getElementsByTagName("h2")[0].outerText;
+                console.log("title:", title)
+
+                titles_text = title + "\n" + subtitle
+                // console.log("titles text:", titles_text)
 
                 var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function () {
@@ -234,19 +215,10 @@ $(document).ready(function () {
                 });
                 id = await p;
                 console.log(`id after async ${id}`);
-                heb_id = "שדגכדגכ"
-                params = "id=" + id + "&section=" + section + "&url=" + href + "&clickedheader=" + "כותרת מרגשת";
-                // params = "id=" + heb_id + "&section=" + section + "&url=" + href;
-
-                // params = "user_id=99&domain=d&section=s&href=h"
+                params = "id=" + id + "&section=" + section + "&url=" + href + "&clickedheader=" + titles_text;
                 console.log(`params: ${params}`)
-                // url = "http://127.0.0.1:5076/clickwrite"
                 url = "https://limitless-sea-45427.herokuapp.com/clickwrite"
                 xhttp.open("GET", url + "?" + params);
-
-
-                // xhttp.open("GET","http://localhost:5076/id=99&domain=d&section=s&href=h");
-                // xhttp.open("GET", "http://127.0.0.1:5076/clickwrite?id=99&domain=d&section=s&href=h", true);
 
                 // send Get requeset
                 xhttp.send()
