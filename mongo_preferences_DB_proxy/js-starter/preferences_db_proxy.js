@@ -89,7 +89,8 @@ async function readFromDB(user_id_to_find) {
   try {
     const myDoc = await col.findOne({_id: ObjectId(user_id_to_find)});
     console.log("return",myDoc);
-    //debug
+    if (myDoc == null)
+      return -1; 
     return (myDoc);
   } catch (err) {
 
@@ -103,10 +104,8 @@ finally {
 }
 
 async function readFieldFromDB(user_id_to_find, field) {
-  //console.log("user_id readFieldFromDB",parseInt(user_id_to_find), field)
   try {
     const myDoc = await col.findOne({_id: ObjectId(user_id_to_find)}, {projection: {_id: 0, [field]: 1}});
-    //console.log("return",myDoc);
     //debug
     return (myDoc);
   } catch (err) {
@@ -144,14 +143,9 @@ async function updateDB(update_JSON) {
   try {
     var stringId = update_JSON._id
     delete update_JSON._id;
-    // var stringId = update_JSON.user_id
-    // delete update_JSON.user_id;
-    //console.log("after deleting - ", update_JSON);
-    //console.log("after deleting - stringId - ",ObjectId(stringId));
+
     const myDoc = await col.updateOne({'_id':ObjectId(stringId)},{$set: update_JSON})
 
-    //console.log("return",myDoc);
-    //debug
     return true;
   } catch (err) {
     return false;
@@ -165,14 +159,12 @@ finally {
 }
 
 app.post('/set_user_sections_counter_and_preferences', (req, res) => {
-  //console.log(req.body.sections_counter);
   updateDB(req.body).then(function (data) 
   {
   });
 })
 
 app.post('/creat_user', async (req, res) => {
-  //console.log(req.body.sections_counter);
   //TODO: set the preferences as the deafult order
   new_user_JSON = { "sections_counter":[0,0,0,0,0],
                     "preferences": [-1,-1,-1,-1,-1],

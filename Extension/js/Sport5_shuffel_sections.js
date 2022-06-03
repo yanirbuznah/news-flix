@@ -127,42 +127,8 @@ function connectServer(uid) {
     console.log(" send finished ")
 }
 
-// function getRandomToken() {
-//     // E.g. 8 * 32 = 256 bits token
-//     var randomPool = new Uint8Array(32);
-//     crypto.getRandomValues(randomPool);
-//     var hex = '';
-//     for (var i = 0; i < randomPool.length; ++i) {
-//         hex += randomPool[i].toString(16);
-//     }
-//     console.log(`id token = ${hex}`)
-//     return hex;
-// }
-
-// async function create_new_user() {
-//     var xhr = new XMLHttpRequest();
-//     xhr.onreadystatechange = function () {
-//         console.log("readystate", this.readyState)
-//         console.log("status: ", this.status)
-//         if (this.readyState == 4 && this.status == 200) {
-//             console.log("finished connecting server from create_new_user()")
-//             new_id = parseInt(xhr.responseText)
-//
-//         }
-//     }
-//
-//     url = "http://127.0.0.1:3000/create_user"
-//     xhr.open("POST", url + "?" + params);
-//     await xhr.send()
-//     console.log("request sent from create_new_user()");
-// }
-
 (function get_user_id() {
     console.log("get_user_id");
-    // // *** clear id from cache *** //
-    // chrome.storage.sync.clear(function () {
-    //     console.log("removed last id")
-    // });
     chrome.storage.sync.get('userid', function (items) {
         var userid = items.userid;
         if (userid) {   // existing user
@@ -170,15 +136,6 @@ function connectServer(uid) {
             connectServer(userid)
         } else { // new user - generate id and create document in the DB
             console.log(`no user id yet`)
-            // create_new_user().then(function (data) {
-            //     console.log(data)
-            //     userid = data;
-            //     // userid = getRandomToken(); // TODO: if user has no ID yet, send an http request
-            //     console.log(`the new user id ${userid}`)
-            //     chrome.storage.sync.set({userid: userid}, function () {
-            //         connectServer(userid)
-            //     });
-            // });
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
                 console.log("readystate", this.readyState)
