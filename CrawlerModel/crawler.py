@@ -65,7 +65,6 @@ class Crawler:
         return sections
 
     def crawl(self):
-
         articles_per_section = {}
         for section, links in self.sections.items():
             articles_per_section[section] = []
@@ -77,34 +76,44 @@ class Crawler:
     def get_article_from_url(self, url):
         html = self.download_url(url)
         soup = BeautifulSoup(html, 'html.parser')
-        if 'article' in url or 'playbasket' in url:
-            content = soup.find('div', {'class': 'article-content'}).text
-            # content = re.search('\n(.*)\n', content).group(1)
-            text = content.replace(u'\xa0', u' ').replace('\n', '').replace('\r', '').replace('\t', '')
-            text = text.replace(u'\xa0', u' ')
-            return text
-        elif 'dayevent' in url:
-            title = soup.find('title').text.replace(u'\xa0', u' ').replace('\n', '').replace('\r', '').replace('\t', '')
-            titles = [title]
-            content = soup.find('div', {'class': 'table_cont_daka'}).contents[1].contents
-            for c in content:
-                if isinstance(c, bs4.element.Tag):
-                    title = c.contents[3].contents[1].text
-                    title = re.search('\n(.*)\n', title).group(1)
-                    title = title.replace(u'\xa0', u' ').replace('\n', '').replace('\r', '').replace('\t', '')
+        try:
+            if 'vole' in url:
+                content = soup.find('div',{'class':'sitefont'}).text
+                text = content.replace(u'\xa0', u' ').replace('\n', '').replace('\r', '').replace('\t', '')
+                text = text.replace(u'\xa0', u' ')
+                return text
 
-                    titles.append(title)
-            text = '\n'.join(titles)
-            return text
-        elif 'playbyplay':
-            titles = []
-            content = soup.find('div', {'class': 'online-game'}).findAll('div', {'class': 'text-box'})
-            for c in content:
-                titles.append(c.text.replace(u'\xa0', u' ').replace('\n', '').replace('\r', '').replace('\t', ''))
+            elif 'article' in url or 'playbasket' in url:
 
-            text = '\n'.join(titles)
-            return text
+                content = soup.find('div', {'class': 'article-content'}).text
 
+                    # content = re.search('\n(.*)\n', content).group(1)
+                text = content.replace(u'\xa0', u' ').replace('\n', '').replace('\r', '').replace('\t', '')
+                text = text.replace(u'\xa0', u' ')
+                return text
+            elif 'dayevent' in url:
+                title = soup.find('title').text.replace(u'\xa0', u' ').replace('\n', '').replace('\r', '').replace('\t', '')
+                titles = [title]
+                content = soup.find('div', {'class': 'table_cont_daka'}).contents[1].contents
+                for c in content:
+                    if isinstance(c, bs4.element.Tag):
+                        title = c.contents[3].contents[1].text
+                        title = re.search('\n(.*)\n', title).group(1)
+                        title = title.replace(u'\xa0', u' ').replace('\n', '').replace('\r', '').replace('\t', '')
+
+                        titles.append(title)
+                text = '\n'.join(titles)
+                return text
+            elif 'playbyplay':
+                titles = []
+                content = soup.find('div', {'class': 'online-game'}).findAll('div', {'class': 'text-box'})
+                for c in content:
+                    titles.append(c.text.replace(u'\xa0', u' ').replace('\n', '').replace('\r', '').replace('\t', ''))
+
+                text = '\n'.join(titles)
+                return text
+        except:
+            return ''
         # return content.text
 
     def run(self):
@@ -121,6 +130,12 @@ class Crawler:
     def website_was_changed(self):
         # html = self.download_url('https://www.sport5.co.il/')
         sections = self.get_sections('https://www.sport5.co.il/')
+        # for now, only main sections
+        try:
+            sections = {'main':sections['main']}
+        except:
+            logging.exception('Failed to get main section')
+
         for section, links in sections.items():
             for link in links:
                 if link not in self.sections[section]:
@@ -161,6 +176,8 @@ def main_loop(sc, crawler, no_changed_time=0):
         entities = get_entities_from_articles(articles)
         logging.info('Getting entities finished')
         print(entities)
+        no_changed_time = 0
+        # requests.post(url='http://reorder.herokuapp.com/update', json=entities)
 
 
     else:
@@ -170,10 +187,14 @@ def main_loop(sc, crawler, no_changed_time=0):
 
 
 
-class Runner:
-    def __init__(self):
-        self.crawler = Crawler()
-        self.scheduler = sched.scheduler(time.time, time.sleep)
-        self.scheduler.enter(60, 1, main_loop, (self.scheduler, self.crawler))
-        threading.Thread(target=self.scheduler.run).start()
+crawler = Crawler()
+sc = sched.scheduler(time.time, time.sleep)
+sc.enter(0, 1, main_loop, (sc, crawler))
+threading.Thread(target=sc.run).start()
+
+
+
+
+
+
 

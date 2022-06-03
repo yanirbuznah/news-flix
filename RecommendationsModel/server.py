@@ -2,7 +2,6 @@ import ast
 import json
 import logging
 from http.server import BaseHTTPRequestHandler, HTTPServer
-import crawler
 # import requests
 import requests
 
@@ -60,20 +59,20 @@ class S(BaseHTTPRequestHandler):
 
     def update_users_preferences(self, updated_users):
         for user in updated_users:
-            print(user)
+            # print(user)
             res = requests.post(preference_db_url + '/set_user_sections_counter_and_preferences', json=user)
-            print(res.content.decode('utf-8'))
+            # print(res.content.decode('utf-8'))
 
     def post_root(self, post_data):
+        # get user old preferences
         json_data = ast.literal_eval(post_data)
         new_records = model.trans_to_ids(json_data)
         old_preferences = self.get_users_preferences(new_records)
-        # x = model.get_transactions_from_db(2,id='6298b7bd9d4f0a5cb9c51665')
-        # json_data = json.loads(x.content.decode('utf-8'))
-        new_records = model.trans_to_ids(json_data)
-        # print(f"from Maiky:{old_preferences}")
-        # print(f"from Tom: {new_records['6298b7bd9d4f0a5cb9c51665']}")
-        # x = {'football': 4, 'tenis': 2, 'basketball': 1}
+
+        # change the records accordingly
+        # new_records = model.trans_to_ids(json_data)
+
+        # update the user in th DB
         updated_users = model.update_users(old_preferences, new_records)
         self.update_users_preferences(updated_users)
         self._set_response()
@@ -95,13 +94,11 @@ def run(server_class=HTTPServer, handler_class=S, port=9000):
 
 
 def main():
-    from sys import argv
     import os
-    # if len(argv) == 2:
-    port = int(os.environ.get("PORT",'5000'))
+
+    port = int(os.environ.get("PORT",'9000'))
     run(port=port)
-    # else:
-        # run()
+
 
 
 if __name__ == "__main__":
