@@ -39,6 +39,19 @@ function orderSectionsByOrderList(order_list) {
     sections = ordered_sections
 }
 
+function rearrangeMainSection() {
+    main_section = document.getElementById("content").getElementsByClassName("row")[0]
+    ms_articles_divs = main_section.childNodes[1].children
+    console.log("ms_articles_divs", ms_articles_divs)   // esction-divider-section-divider...
+    // TODO: continue from here
+    // all divs contain space for ads, but some
+    for (i = 0; i < ms_articles_divs.length - 1; i += 2) {
+        article_div = ms_articles_divs[i]
+        // todo: remove first inner div (ad div) from each article div
+        // understand how to do so (changing dom element is different than changing js array)
+    }
+}
+
 function rearrangePage() {
     var content = document.getElementById('content');
     console.log(content.getElementsByClassName("center"))
@@ -67,6 +80,8 @@ function rearrangePage() {
             }
         }
     });
+
+    rearrangeMainSection()
 }
 
 var ready_2_shuffle = false;
@@ -235,3 +250,8 @@ $(document).ready(function () {
     }
     console.log("finished document ready fucntion")
 });
+
+// TODO: understand how to reorder
+// document.getElementById("content").getElementsByClassName("row")[0]
+// real articles contain "h2", ads don't
+//
