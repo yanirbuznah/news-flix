@@ -41,6 +41,25 @@ app.get('/', (request, response) => {
 
 })
 
+app.post('/set_beg_of_words', async (req, res) => {
+    // console.log(req.body)
+    // let domain_req = req.body.domain
+    let beg_of_words_req = req.query.beg_of_words
+    console.log("beg_of_words_req", beg_of_words_req)
+    // preferences_proxy_url = 'https://preferences-db-proxy.herokuapp.com/creat_user'
+    // let payload = { domain: domain_req };
+
+    // let res_id = await axios.post(preferences_proxy_url, payload);
+    // // console.log(`res_id: ${res_id}`)
+
+    // // let id = res_id.id;
+    // let id = res_id.data._id;
+
+    // console.log(id);
+    // // res.send(JSON.stringify({_id : id}))
+    // res.send(id)
+  })
+
 app.post('/creat_user', async (req, res) => {
     // console.log(req.body)
     // let domain_req = req.body.domain
