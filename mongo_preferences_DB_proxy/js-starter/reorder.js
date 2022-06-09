@@ -6,6 +6,8 @@ const port = 7000
 app.use(express.json())
 app.use(cors())
 
+main_section_bag_of_words = []
+
 app.get('/', (request, response) => {
     let user_id = request.query.user_id
     console.log("user_id", user_id)

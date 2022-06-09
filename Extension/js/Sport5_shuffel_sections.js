@@ -3,6 +3,7 @@
 //parent.insertBefore(content, parent.firstChild);
 var id = null; // todo: user id should not be hard-coded. Use cookies instead
 var sections = ["section section-blue", "section section-red", "section section-orange", "section section-grey", "section section-green"];
+var main_order = [8,7,6,5,4,3,2,1,0];
 
 
 function shuffle(array) {
@@ -43,13 +44,57 @@ function rearrangeMainSection() {
     main_section = document.getElementById("content").getElementsByClassName("row")[0]
     ms_articles_divs = main_section.childNodes[1].children
     console.log("ms_articles_divs", ms_articles_divs)   // esction-divider-section-divider...
+    console.log("ms_articles_divs.length" + ms_articles_divs.length)
+    filtered_divider = []
+    filtered_articales = []
+    for (var i = 0; i < ms_articles_divs.length; i++) {
+        if (ms_articles_divs[i].className == "divider") {
+            filtered_divider.push(ms_articles_divs[i])
+            filtered_articales.push(ms_articles_divs[i].previousElementSibling)
+        }
+    }
+    console.log("filtered_centers after:")
+    console.log(filtered_divider)
+    console.log("filtered_articales after:")
+    console.log(filtered_articales)
+
+    for (var i = 0; i < main_order.length; i++) {
+        index = i
+        item = main_order[i]
+        var current_article = filtered_articales[item];
+        var current_divider = filtered_divider[index];
+        console.log("current_article after:"+(item))
+        console.log(current_article)
+        console.log("current_divider after:"+(index))
+        console.log(current_divider)
+        current_divider.parentNode.insertBefore(current_article ,current_divider)
+    }
+
+    // main_order.forEach(function (item, index) {
+    //     var current_article = filtered_articales[item];
+    //     var current_divider = filtered_divider[index];
+    //     console.log("current_article after:"+(item))
+    //     console.log(current_article)
+    //     console.log("current_divider after:"+(index))
+    //     console.log(current_divider)
+    //     current_divider.parentNode.insertBefore(current_article ,current_divider)
+    // });
+    console.log("finish")
+    // for (var i = 0; i < filtered_divider.length; i++) {
+    //     if (ms_articles_divs[i].className == "divider") {
+    //         filtered_divider.push(ms_articles_divs[i])
+    //     }
+    // }
     // TODO: continue from here
     // all divs contain space for ads, but some
-    for (i = 0; i < ms_articles_divs.length - 1; i += 2) {
-        article_div = ms_articles_divs[i]
-        // todo: remove first inner div (ad div) from each article div
-        // understand how to do so (changing dom element is different than changing js array)
-    }
+    //ms_articles_divs[2]=ms_articles_divs[4]
+    // for (i = 0; i < ms_articles_divs.length - 1; i += 2) {
+    //     article_div = ms_articles_divs[i]
+    //     console.log("MG outerText::::::::::" + ms_articles_divs[i].outerText)
+    //     ms_articles_divs[i].outerText = "Tom Magdaci"
+    //     // todo: remove first inner div (ad div) from each article div
+    //     // understand how to do so (changing dom element is different than changing js array)
+    // }
 }
 
 function rearrangePage() {
