@@ -64,3 +64,6 @@ app.listen(port, () => {
 
 
 //sendHttpPostReq('http://localhost:3000/informationrequest',{k: "2",id: "6298b7bd9d4f0a5cb9c51665"});
+
+
+sendHttpPostReq('http://localhost:7000/set_beg_of_words',{beg_of_words: [["tom1","tom2"],["maiky1","maiky2"]]});

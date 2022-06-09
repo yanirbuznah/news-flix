@@ -44,8 +44,9 @@ app.get('/', (request, response) => {
 app.post('/set_beg_of_words', async (req, res) => {
     // console.log(req.body)
     // let domain_req = req.body.domain
-    let beg_of_words_req = req.query.beg_of_words
+    let beg_of_words_req = req.body.beg_of_words
     console.log("beg_of_words_req", beg_of_words_req)
+    main_section_bag_of_words = beg_of_words_req
     // preferences_proxy_url = 'https://preferences-db-proxy.herokuapp.com/creat_user'
     // let payload = { domain: domain_req };
 
