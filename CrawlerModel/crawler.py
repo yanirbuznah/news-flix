@@ -33,7 +33,8 @@ class Crawler:
         content = soup.find('div', {'id': 'content'})
         sections = {}
         self.get_main_links(content, url, sections)
-        self.get_contents_links(content, sections)
+        # for now, only main sections
+        # self.get_contents_links(content, sections)
         return sections
 
     def get_contents_links(self, content, sections):
@@ -130,11 +131,7 @@ class Crawler:
     def website_was_changed(self):
         # html = self.download_url('https://www.sport5.co.il/')
         sections = self.get_sections('https://www.sport5.co.il/')
-        # for now, only main sections
-        try:
-            sections = {'main':sections['main']}
-        except:
-            logging.exception('Failed to get main section')
+
 
         for section, links in sections.items():
             for link in links:
@@ -177,7 +174,7 @@ def main_loop(sc, crawler, no_changed_time=0):
         logging.info('Getting entities finished')
         print(entities)
         no_changed_time = 0
-        # requests.post(url='http://reorder.herokuapp.com/update', json=entities)
+        requests.post(url='http://reorder.herokuapp.com/set_bag_of_words', json=entities)
 
 
     else:

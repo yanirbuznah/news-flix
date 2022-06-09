@@ -2,8 +2,8 @@ import numpy as np
 import requests
 
 import tokenizer
-
-yap_url= 'http://localhost:8090/run_ncrf_model?model_name=token-multi'
+yap_url = requests.get('https://nlp-proxy.herokuapp.com/get_url').json()['url'] + '/run_ncrf_model?model_name=token-multi'
+# yap_url='https://nlp-proxy.herokuapp.com/run_ncrf_model?model_name=token-multi'
 
 
 

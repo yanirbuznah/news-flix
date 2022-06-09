@@ -8,8 +8,8 @@ sections = ["section section-blue", "section section-red", "section section-oran
 SECTIONS_DICT = {section:i for i, section in enumerate(sections)}
 
 data_accumulator_url = 'http://limitless-sea-45427.herokuapp.com/informationrequest'
-yap_url= 'http://localhost:8090/run_ncrf_model?model_name=token-multi'
-
+# yap_url= 'http://localhost:8090/run_ncrf_model?model_name=token-multi'
+yap_url = requests.get('https://nlp-proxy.herokuapp.com/get_url').json()['url'] + '/run_ncrf_model?model_name=token-multi'
 
 def make_random_transactions():
     return [('url', np.random.randint(0, 10), np.random.choice(sections), t) for t in range(100)]
@@ -34,8 +34,9 @@ def update_preferences(user_record):
 def update_counter_and_ner(user_record, new_record):
     ners = set(user_record.get('ner',[]))
     for _, theme, _, text in new_record:
-        entities = get_entities_from_text(text)
-        ners.update(set(entities))
+        if yap_url != '':
+            entities = get_entities_from_text(text)
+            ners.update(entities)
         index = SECTIONS_DICT[theme]
         user_record['sections_counter'][index] += 1
 
