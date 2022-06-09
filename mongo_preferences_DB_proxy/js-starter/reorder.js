@@ -25,17 +25,20 @@ app.get('/', (request, response) => {
             console.log(res)
             let preferences_json = res.data
             let pref_array = preferences_json.preferences
+            let my_main_ner = preferences_json.ner
             console.log(typeof preferences_json)
 
-            // response.send(sections_order)
-            console.log(preferences_json)
-            // response.send(preferences_json)
+            console.log(preferences_json){
+                response.send([pref_array, [0,1,2,3,4,5,6,7,8]])
+            }
+            
+            if (main_section_bag_of_words.length == 0)
+
             console.log(`pref_array: ${pref_array}`)
-            response.send(pref_array)
+            response.send([pref_array, [1,0,2,3,4,5,6,7,8]])
             console.log("response sent")
         })
         .catch(error => {
-            // console.error("error in sending the request! status:", error.response.status)
             console.error("error in sending the request! status:", error.message)
         })
 

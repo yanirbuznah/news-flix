@@ -168,7 +168,8 @@ app.post('/creat_user', async (req, res) => {
   //TODO: set the preferences as the deafult order
   new_user_JSON = { "sections_counter":[0,0,0,0,0],
                     "preferences": [-1,-1,-1,-1,-1],
-                    "domain":req.body.domain
+                    "domain":req.body.domain,
+                    "ner":[]
                   }
   id = await writeToDB(new_user_JSON)
   res.send(JSON.stringify({_id : id}))

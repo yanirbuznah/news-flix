@@ -145,8 +145,10 @@ function connectServer(uid) {
             var sections_order = JSON.parse(this.responseText)
             console.log(`response text: ${sections_order}`)
             // order = sections_order.preferences
-            order = this.responseText
-            order = JSON.parse(order)
+            order1 = this.responseText
+            order1 = JSON.parse(order1)
+            order = order1[0]
+            
             console.log(`typeof order: ${typeof order}`)
             console.log(`responseText: ${order}`)
 
