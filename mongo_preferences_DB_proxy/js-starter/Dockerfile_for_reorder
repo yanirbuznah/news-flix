@@ -7,6 +7,6 @@ COPY package-lock.json package-lock.json
 
 RUN npm install
 
-COPY preferences_db_proxy.js preferences_db_proxy.js
+COPY reorder.js reorder.js
 
-CMD [ "node", "preferences_db_proxy.js" ]
+CMD [ "node", "reorder.js" ]
