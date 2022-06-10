@@ -174,7 +174,7 @@ def main_loop(sc, crawler, no_changed_time=0):
         logging.info('Getting entities finished')
         print(entities)
         no_changed_time = 0
-        requests.post(url='http://reorder.herokuapp.com/set_bag_of_words', json=entities)
+        requests.post(url='https://reorder.herokuapp.com/set_bag_of_words', json=entities)
 
 
     else:
