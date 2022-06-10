@@ -3,7 +3,7 @@
 //parent.insertBefore(content, parent.firstChild);
 var id = null; // todo: user id should not be hard-coded. Use cookies instead
 var sections = ["section section-blue", "section section-red", "section section-orange", "section section-grey", "section section-green"];
-var main_order = [8,7,6,5,4,3,2,1,0];
+var main_order = [6,5,4,3,2,1,0];
 
 
 function shuffle(array) {
@@ -145,22 +145,14 @@ function connectServer(uid) {
             var sections_order = JSON.parse(this.responseText)
             console.log(`response text: ${sections_order}`)
             // order = sections_order.preferences
-            order1 = this.responseText
-            order1 = JSON.parse(order1)
-            order = order1[0]
+            order_instructions = JSON.parse(this.responseText)
+            sections_order = order_instructions[0]
+            main_order = order_instructions[1]
             
-            console.log(`typeof order: ${typeof order}`)
-            console.log(`responseText: ${order}`)
+            console.log(`typeof order: ${typeof sections_order}`)
+            console.log(`responseText: ${sections_order}`)
 
-            // convert order to indices list
-            indices_list = []
-            for (var i = 0; i < order.length; i++) {
-                indices_list.push(order[i])
-            }
-            console.log(`indices_list: ${indices_list}`)
-
-            // orderSectionsByOrderList(indices_list)  // update sections' order
-            orderSectionsByOrderList(order)  // update sections' order
+            orderSectionsByOrderList(sections_order)  // update sections' order
 
             // rearrange page according to the updated order,
             // or set ready_2_shuffle to be true in case document
