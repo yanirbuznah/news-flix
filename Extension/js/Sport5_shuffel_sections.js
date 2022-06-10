@@ -3,7 +3,7 @@
 //parent.insertBefore(content, parent.firstChild);
 var id = null; // todo: user id should not be hard-coded. Use cookies instead
 var sections = ["section section-blue", "section section-red", "section section-orange", "section section-grey", "section section-green"];
-var main_order = [6,5,4,3,2,1,0];
+var main_order = [6, 5, 4, 3, 2, 1, 0];
 
 
 function shuffle(array) {
@@ -46,28 +46,28 @@ function rearrangeMainSection() {
     console.log("ms_articles_divs", ms_articles_divs)   // esction-divider-section-divider...
     console.log("ms_articles_divs.length" + ms_articles_divs.length)
     filtered_divider = []
-    filtered_articales = []
+    filtered_articles = []
     for (var i = 0; i < ms_articles_divs.length; i++) {
         if (ms_articles_divs[i].className == "divider") {
             filtered_divider.push(ms_articles_divs[i])
-            filtered_articales.push(ms_articles_divs[i].previousElementSibling)
+            filtered_articles.push(ms_articles_divs[i].previousElementSibling)
         }
     }
     console.log("filtered_centers after:")
     console.log(filtered_divider)
     console.log("filtered_articales after:")
-    console.log(filtered_articales)
+    console.log(filtered_articles)
 
     for (var i = 0; i < main_order.length; i++) {
         index = i
         item = main_order[i]
-        var current_article = filtered_articales[item];
+        var current_article = filtered_articles[item];
         var current_divider = filtered_divider[index];
-        console.log("current_article after:"+(item))
+        console.log("current_article after:" + (item))
         console.log(current_article)
-        console.log("current_divider after:"+(index))
+        console.log("current_divider after:" + (index))
         console.log(current_divider)
-        current_divider.parentNode.insertBefore(current_article ,current_divider)
+        current_divider.parentNode.insertBefore(current_article, current_divider)
     }
 
     // main_order.forEach(function (item, index) {
@@ -148,7 +148,7 @@ function connectServer(uid) {
             order_instructions = JSON.parse(this.responseText)
             sections_order = order_instructions[0]
             main_order = order_instructions[1]
-            
+
             console.log(`typeof order: ${typeof sections_order}`)
             console.log(`responseText: ${sections_order}`)
 
@@ -169,7 +169,8 @@ function connectServer(uid) {
     // prepare requset to the server
     console.log(`uid= ${uid}`)
     params = "user_id=" + uid + "&domain=" + document.location.host;  // todo: user_id not hardcoded
-    url = "https://reorder.herokuapp.com/"
+    // url = "https://reorder.herokuapp.com/"
+    url = "http://127.0.0.1:7000"
     xhttp.open("GET", url + "?" + params, false);
 
     // send Get request
