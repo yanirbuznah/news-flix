@@ -10,6 +10,7 @@ SECTIONS_DICT = {section:i for i, section in enumerate(sections)}
 data_accumulator_url = 'http://limitless-sea-45427.herokuapp.com/informationrequest'
 # yap_url= 'http://localhost:8090/run_ncrf_model?model_name=token-multi'
 yap_url = requests.get('https://nlp-proxy.herokuapp.com/get_url').json()['url'] + '/run_ncrf_model?model_name=token-multi'
+print(yap_url)
 
 def make_random_transactions():
     return [('url', np.random.randint(0, 10), np.random.choice(sections), t) for t in range(100)]

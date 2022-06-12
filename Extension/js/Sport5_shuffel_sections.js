@@ -169,8 +169,8 @@ function connectServer(uid) {
     // prepare requset to the server
     console.log(`uid= ${uid}`)
     params = "user_id=" + uid + "&domain=" + document.location.host;  // todo: user_id not hardcoded
-    // url = "https://reorder.herokuapp.com/"
-    url = "http://127.0.0.1:7000"
+    url = "https://reorder.herokuapp.com/"
+    // url = "http://127.0.0.1:7000"
     xhttp.open("GET", url + "?" + params, false);
 
     // send Get request

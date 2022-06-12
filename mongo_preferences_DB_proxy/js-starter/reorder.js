@@ -95,6 +95,7 @@ app.post('/set_bag_of_words', async (req, res) => {
     let beg_of_words_req = req.body.main
     console.log("beg_of_words_req", beg_of_words_req)
     main_section_bag_of_words = beg_of_words_req
+    res.send()
 })
 
 app.post('/creat_user', async (req, res) => {
