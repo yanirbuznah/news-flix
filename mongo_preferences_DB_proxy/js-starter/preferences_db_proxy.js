@@ -159,10 +159,18 @@ finally {
 }
 
 app.post('/set_user_sections_counter_and_preferences', (req, res) => {
-  updateDB(req.body).then(function (data) 
-  {
-  res.send("ok");
-  });
+    try {
+    updateDB(req.body).then(function (data)
+    {
+        // res.send("ok");
+    });
+    res.send("ok");
+  } catch (err) {
+    console.log(err.stack);
+    res.send("error");
+    }
+
+    // res.send("ok");
 
 })
 

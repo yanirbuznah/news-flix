@@ -9,9 +9,9 @@ SECTIONS_DICT = {section:i for i, section in enumerate(sections)}
 
 data_accumulator_url = 'http://limitless-sea-45427.herokuapp.com/informationrequest'
 # yap_url= 'http://localhost:8090/run_ncrf_model?model_name=token-multi'
-yap_url = requests.get('https://nlp-proxy.herokuapp.com/get_url').json()['url']
-yap_url_route = yap_url + '/run_ncrf_model?model_name=token-multi'
-print(yap_url)
+yap_url_route = '/run_ncrf_model?model_name=token-multi'
+yap_url = ''
+
 
 def make_random_transactions():
     return [('url', np.random.randint(0, 10), np.random.choice(sections), t) for t in range(100)]
@@ -34,13 +34,12 @@ def update_preferences(user_record):
     return user_record
 
 def check_if_server_enabled():
-    global yap_url, yap_url_route
-    if requests.get(url=yap_url).status_code == 200:
+    global yap_url
+    res_yap_url = requests.get('https://nlp-proxy.herokuapp.com/get_url')
+    if res_yap_url.status_code == 200:
+        yap_url = res_yap_url.json()['url']
         return True
-    yap_url = requests.get('https://nlp-proxy.herokuapp.com/get_url').json()['url']
-    if requests.get(url=yap_url).status_code == 200:
-        yap_url_route = yap_url + '/run_ncrf_model?model_name=token-multi'
-        return True
+    return False
 
 
 
@@ -88,7 +87,7 @@ def get_ner(reqs):
     preds = []
     for req in reqs:
         # response.append(requests.post(url=data_accumulator_url, json=r))
-        res = requests.post(url=yap_url_route, json=req)
+        res = requests.post(url=yap_url + yap_url_route, json=req)
         text.append(res.json()[0]['tokenized_text'])
         preds.append(res.json()[0]['ncrf_preds'])
         # response.append(res.json()[0])

@@ -59,9 +59,9 @@ class S(BaseHTTPRequestHandler):
 
     def update_users_preferences(self, updated_users):
         for user in updated_users:
-            # print(user)
+            logging.info('updating user: {}'.format(user))
             res = requests.post(preference_db_url + '/set_user_sections_counter_and_preferences', json=user)
-            # print(res.content.decode('utf-8'))
+            logging.info(res.content.decode('utf-8'))
 
     def post_root(self, post_data):
         # get user old preferences
