@@ -159,29 +159,31 @@ def get_entities_from_articles(articles_per_section):
 def main_loop(sc, crawler, no_changed_time=0):
     global entities
     # no_changed_time = 0
-    if crawler.website_was_changed():
+    if model.check_if_server_enabled():
+        if crawler.website_was_changed():
 
-        crawler.update_urls(['https://www.sport5.co.il/'])
+            crawler.update_urls(['https://www.sport5.co.il/'])
 
-        # run crawler
-        logging.info('Crawling...')
-        articles = crawler.run()
-        logging.info('Crawling finished')
-
-
-        # get entities
-        logging.info('Getting entities...')
-        entities = get_entities_from_articles(articles)
-        logging.info('Getting entities finished')
-        logging.info(entities)
-        no_changed_time = 0
-        res = requests.post(url='https://reorder.herokuapp.com/set_bag_of_words', json=entities)
-        logging.info(res)
+            # run crawler
+            logging.info('Crawling...')
+            articles = crawler.run()
+            logging.info('Crawling finished')
 
 
-    else:
-        no_changed_time += 1
-        logging.info(f'no change for {no_changed_time} minutes')
+            # get entities
+            logging.info('Getting entities...')
+            entities = get_entities_from_articles(articles)
+            logging.info('Getting entities finished')
+            logging.info(entities)
+            no_changed_time = 0
+            res = requests.post(url='https://reorder.herokuapp.com/set_bag_of_words', json=entities)
+            logging.info(res)
+
+
+        else:
+            no_changed_time += 1
+            logging.info(f'No changes in {no_changed_time} minutes')
+
     sc.enter(60, 1, main_loop, (sc, crawler,no_changed_time))
 
 

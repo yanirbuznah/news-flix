@@ -1,8 +1,9 @@
 import requests
 
 import tokenizer
-yap_url = requests.get('https://nlp-proxy.herokuapp.com/get_url').json()['url'] + '/run_ncrf_model?model_name=token-multi'
-# yap_url='https://nlp-proxy.herokuapp.com/run_ncrf_model?model_name=token-multi'
+yap_url = requests.get('https://nlp-proxy.herokuapp.com/get_url').json()['url']
+yap_url_route = yap_url + '/run_ncrf_model?model_name=token-multi'
+print(yap_url)
 
 
 
@@ -10,7 +11,7 @@ def get_ner(reqs):
     text = []
     preds = []
     for req in reqs:
-        res = requests.post(url=yap_url, json=req)
+        res = requests.post(url=yap_url_route, json=req)
         text.append(res.json()[0]['tokenized_text'])
         preds.append(res.json()[0]['ncrf_preds'])
 
@@ -18,6 +19,15 @@ def get_ner(reqs):
     preds = [pred for sublist in preds for pred in sublist]
     response = {'tokens': text, 'preds': preds}
     return response
+
+def check_if_server_enabled():
+    global yap_url, yap_url_route
+    if requests.get(url=yap_url).status_code == 200:
+        return True
+    yap_url = requests.get('https://nlp-proxy.herokuapp.com/get_url').json()['url']
+    if requests.get(url=yap_url).status_code == 200:
+        yap_url_route = yap_url + '/run_ncrf_model?model_name=token-multi'
+        return True
 
 
 def get_req_for_ner(sentence):

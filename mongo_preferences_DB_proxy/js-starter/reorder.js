@@ -69,17 +69,17 @@ app.get('/', (request, response) => {
             console.log("my_main_ner", my_main_ner)
             console.log(typeof preferences_json)
 
-            console.log(preferences_json)
+            console.log(`pref_array: ${pref_array}`)
 
             if (main_section_bag_of_words.length == 0) {
                 response.send([pref_array, [0, 1, 2, 3, 4, 5, 6]])
                 // response.send([pref_array, [1, 0, 2, 3, 4, 5, 6]])
-            }
-
-            console.log(`pref_array: ${pref_array}`)
+            }else{
             let mainOrder = get_main_order(my_main_ner);
             console.log("mainOrder", mainOrder)
             response.send([pref_array, mainOrder])
+            }
+
             console.log("response sent")
         })
         .catch(error => {
@@ -95,7 +95,7 @@ app.post('/set_bag_of_words', async (req, res) => {
     let beg_of_words_req = req.body.main
     console.log("beg_of_words_req", beg_of_words_req)
     main_section_bag_of_words = beg_of_words_req
-    res.send()
+    res.send("ok")
 })
 
 app.post('/creat_user', async (req, res) => {

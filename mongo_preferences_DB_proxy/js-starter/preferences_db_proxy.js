@@ -161,7 +161,9 @@ finally {
 app.post('/set_user_sections_counter_and_preferences', (req, res) => {
   updateDB(req.body).then(function (data) 
   {
+  res.send("ok");
   });
+
 })
 
 app.post('/creat_user', async (req, res) => {
