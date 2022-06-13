@@ -1,0 +1,6 @@
+[submodule "nemo/yapproj6"]
+	path = nemo/yapproj6
+	url = https://github.com/OnlpLab/yap.git
+[submodule "nemo/nerhH"]
+	path = nemo/nerhH
+	url = https://github.com/yanirbuznah/NEMO.git
