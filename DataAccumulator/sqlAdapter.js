@@ -9,6 +9,7 @@ const sectionMaxLength=100
 const clickedheaderMaxLength=500 //because hebrew char is two bytes
 
 function writeLineToClickTable(id, url, section, clickedheader){
+  clickedheader = clickedheader.replaceAll("'","''");
   q= "INSERT INTO click_table (id, url, section, clicktime, clickedheader) values('"+id +"','"
   +url+"','"
   +section+"',now(),'"+clickedheader+"');"
