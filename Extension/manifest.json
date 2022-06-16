@@ -2,20 +2,14 @@
   "manifest_version": 3,
   "name": "Newsflix",
   "description": "This extension will Change Your Life",
-  "version": "1.0",
+  "version": "1.1",
   "permissions": ["storage"],
   "icons": {
     "16": "/images/world-news-16.png",
     "48": "/images/world-news-48.png",
     "128": "/images/world-news-128.png"
   },
-//  "page_action": {
-//    "default_icon": {
-//      "16": "/images/world-news-16.png",
-//      "48": "/images/world-news-48.png",
-//      "128": "/images/world-news-128.png"
-//    }
-//  },
+
 
   "content_scripts": [
     {

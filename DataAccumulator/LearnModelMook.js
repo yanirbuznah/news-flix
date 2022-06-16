@@ -20,7 +20,7 @@ function sendHttpPostReq(url,body){
 
         // Define what happens in case of error
     xHR.addEventListener( "error", function( event ) {
-    alert( 'Oops! Something went wrong.' );
+    // alert( 'Oops! Something went wrong.' );
     } );
 
 

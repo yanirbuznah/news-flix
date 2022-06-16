@@ -232,7 +232,7 @@ $(document).ready(function () {
                 // console.log("attaching click event listener")
                 // console.log("this:", this)
                 var href = $(clicked_element).attr("href");
-                alert("You're trying to go to " + href + "from " + section);
+                // alert("You're trying to go to " + href + "from " + section);
 
                 // title = this.text
                 // // console.log(`title: ${title}`)
