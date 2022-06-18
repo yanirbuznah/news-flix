@@ -1,42 +1,23 @@
-// Here You can type your custom JavaScript...
-//var parent = content.parentNode;
-//parent.insertBefore(content, parent.firstChild);
-var id = null; // todo: user id should not be hard-coded. Use cookies instead
+var id = null;
 var sections = ["section section-blue", "section section-red", "section section-orange", "section section-grey", "section section-green"];
 var main_order = [6, 5, 4, 3, 2, 1, 0];
 
-
-function shuffle(array) {
-    let currentIndex = array.length, randomIndex;
-
-    // While there remain elements to shuffle...
-    while (currentIndex != 0) {
-
-        // Pick a remaining element...
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-
-        // And swap it with the current element.
-        [array[currentIndex], array[randomIndex]] = [
-            array[randomIndex], array[currentIndex]];
-    }
-
-    return array;
-}
-
+/**
+ *
+ * @param order_list - list determining the new order of the sections.
+ * order_list[i] = x means x should be the i-th section
+ * @description changes the sections' order list according to the given order list
+ */
 function orderSectionsByOrderList(order_list) {
-    // console.log("order list:", order_list)
     ordered_sections = []
     list_len = order_list.length
     for (var i = 0; i < list_len; i++) {
-        // console.log("from orderSectionsByOrderList", typeof order_list[i])
         if (order_list[i] == -1) {
             ordered_sections = sections
             break
         }
         ordered_sections.push(sections[order_list[i]])
     }
-    // console.log("ordered sections", ordered_sections)
     sections = ordered_sections
 }
 
@@ -55,7 +36,7 @@ function rearrangeMainSection() {
     }
     // console.log("filtered_centers after:")
     // console.log(filtered_divider)
-    // console.log("filtered_articales after:")
+    // console.log("filtered_articles after:")
     // console.log(filtered_articles)
 
     for (var i = 0; i < main_order.length; i++) {
@@ -69,32 +50,6 @@ function rearrangeMainSection() {
         // console.log(current_divider)
         current_divider.parentNode.insertBefore(current_article, current_divider)
     }
-
-    // main_order.forEach(function (item, index) {
-    //     var current_article = filtered_articales[item];
-    //     var current_divider = filtered_divider[index];
-    //     // console.log("current_article after:"+(item))
-    //     // console.log(current_article)
-    //     // console.log("current_divider after:"+(index))
-    //     // console.log(current_divider)
-    //     current_divider.parentNode.insertBefore(current_article ,current_divider)
-    // });
-    // console.log("finish")
-    // for (var i = 0; i < filtered_divider.length; i++) {
-    //     if (ms_articles_divs[i].className == "divider") {
-    //         filtered_divider.push(ms_articles_divs[i])
-    //     }
-    // }
-    // TODO: continue from here
-    // all divs contain space for ads, but some
-    //ms_articles_divs[2]=ms_articles_divs[4]
-    // for (i = 0; i < ms_articles_divs.length - 1; i += 2) {
-    //     article_div = ms_articles_divs[i]
-    //     // console.log("MG outerText::::::::::" + ms_articles_divs[i].outerText)
-    //     ms_articles_divs[i].outerText = "Tom Magdaci"
-    //     // todo: remove first inner div (ad div) from each article div
-    //     // understand how to do so (changing dom element is different than changing js array)
-    // }
 }
 
 function rearrangePage() {
@@ -109,7 +64,7 @@ function rearrangePage() {
         }
     }
     // console.log(filtered_centers)
-
+    // reorder section according to the sections list
     sections.forEach(function (item, index) {
         // console.log(item);
         var j = 0
@@ -125,13 +80,13 @@ function rearrangePage() {
             }
         }
     });
-
+    // after sections rearrangement, handle the inner  rearrangement of the main section
     rearrangeMainSection()
 }
 
 var ready_2_shuffle = false;
 
-function connectServer(uid) {
+function connectPreferncesServer(uid) {
     // console.log("******CONNECTING SERVER******")
     var xhttp = new XMLHttpRequest();
     // set callback for when connection with preferences server is ready
@@ -141,16 +96,12 @@ function connectServer(uid) {
         if (this.readyState == 4 && this.status == 200) {
             // console.log("finished connecting server")
 
-            // reorder sections acoording to the server response
+            // reorder sections according to the server response
             var sections_order = JSON.parse(this.responseText)
-            // console.log(`response text: ${sections_order}`)
-            // order = sections_order.preferences
             order_instructions = JSON.parse(this.responseText)
+            // extract sections order and main-section inner order of this user from the response
             sections_order = order_instructions[0]
             main_order = order_instructions[1]
-
-            // console.log(`typeof order: ${typeof sections_order}`)
-            // console.log(`responseText: ${sections_order}`)
 
             orderSectionsByOrderList(sections_order)  // update sections' order
 
@@ -168,7 +119,7 @@ function connectServer(uid) {
 
     // prepare requset to the server
     // console.log(`uid= ${uid}`)
-    params = "user_id=" + uid + "&domain=" + document.location.host;  // todo: user_id not hardcoded
+    params = "user_id=" + uid + "&domain=" + document.location.host;
     url = "https://reorder.herokuapp.com/"
     // url = "http://127.0.0.1:7000"
     xhttp.open("GET", url + "?" + params, false);
@@ -177,7 +128,6 @@ function connectServer(uid) {
     xhttp.send()
     // console.log(" send finished ")
 }
-
 
 (function get_user_id() {
     // console.log("get_user_id");
@@ -189,8 +139,8 @@ function connectServer(uid) {
         var userid = items.userid;
         if (userid) {   // existing user
             // console.log(`userid=${userid}`)
-            connectServer(userid)
-        } else { // new user - generate id and create document in the DB
+            connectPreferncesServer(userid)
+        } else { // new user - generate id and create a new record in the DB
             // console.log(`no user id yet`)
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
@@ -208,7 +158,7 @@ function connectServer(uid) {
             // domain = "www.sport5.co.il"
             // console.log(`domain: ${domain}`)
             url = "https://reorder.herokuapp.com/creat_user"
-            // url = "http://127.0.0.1:5000"   // TODO: test with real server
+            // url = "http://127.0.0.1:5000"
             xhr.open("POST", url + '?' + 'domain=' + domain);
             xhr.send()
             // console.log("request sent from create_new_user()");
@@ -216,16 +166,17 @@ function connectServer(uid) {
     })
 })()
 
-
 $(document).ready(function () {
     var content = document.getElementById('content');
-    // console.log("location:", document.location.host)
 
     // track clicks
-    // console.log("sections:", sections)
     sections.forEach(function (section) {
         // console.log("section:", section)
         curr_section = content.getElementsByClassName(section)
+        /*
+        adding click event listener to report from which section the click event occurred +
+        the title and the subtitle of the clicked article
+        */
         $(curr_section).on("click", "a", async function () {
                 //this == the link that was clicked
                 clicked_element = this
@@ -234,11 +185,10 @@ $(document).ready(function () {
                 var href = $(clicked_element).attr("href");
                 // alert("You're trying to go to " + href + "from " + section);
 
-                // title = this.text
-                // // console.log(`title: ${title}`)
                 class_name = clicked_element.parentElement.className;
                 tag_name = clicked_element.parentElement.tagName;
                 if (class_name == "writer" || tag_name == "SPAN") {
+                    // go up one more level
                     clicked_element = clicked_element.parentElement
                 }
                 // console.log("class name:", class_name)
@@ -260,7 +210,7 @@ $(document).ready(function () {
                     // console.log("readystate", this.readyState)
                     // console.log("status: ", this.status)
                     // if (this.readyState == 4 && this.status == 200)
-                        // console.log("finished connecting server")
+                    // console.log("finished connecting server")
                 }
 
                 var p = new Promise(function (resolve, reject) {
@@ -290,8 +240,3 @@ $(document).ready(function () {
     }
     // console.log("finished document ready fucntion")
 });
-
-// TODO: understand how to reorder
-// document.getElementById("content").getElementsByClassName("row")[0]
-// real articles contain "h2", ads don't
-//
