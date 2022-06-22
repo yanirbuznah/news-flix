@@ -3,7 +3,7 @@ import logging
 import re
 import threading
 from urllib.parse import urljoin
-
+import consts
 import bs4
 import requests
 from bs4 import BeautifulSoup
@@ -130,8 +130,8 @@ class Crawler:
                 self.visited_urls.append(url)
 
     def website_was_changed(self):
-        # html = self.download_url('https://www.sport5.co.il/')
-        sections = self.get_sections('https://www.sport5.co.il/')
+
+        sections = self.get_sections(consts.website_url)
 
 
         for section, links in sections.items():
@@ -162,7 +162,7 @@ def main_loop(sc, crawler, no_changed_time=0):
     if model.check_if_server_enabled():
         if crawler.website_was_changed():
 
-            crawler.update_urls(['https://www.sport5.co.il/'])
+            crawler.update_urls([consts.website_utl])
 
             # run crawler
             logging.info('Crawling...')
@@ -176,7 +176,7 @@ def main_loop(sc, crawler, no_changed_time=0):
             logging.info('Getting entities finished')
             logging.info(entities)
             no_changed_time = 0
-            res = requests.post(url='https://reorder.herokuapp.com/set_bag_of_words', json=entities)
+            res = requests.post(url=consts.reorder_url, json=entities)
             logging.info(res)
 
 

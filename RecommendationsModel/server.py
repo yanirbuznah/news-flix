@@ -2,13 +2,10 @@ import ast
 import json
 import logging
 from http.server import BaseHTTPRequestHandler, HTTPServer
-# import requests
 import requests
-
+import consts
 import model
 
-preference_db_url = 'http://preferences-db-proxy.herokuapp.com'
-# preference_db_url_update = 'http://localhost:4000/get_user'
 
 
 class S(BaseHTTPRequestHandler):
@@ -30,7 +27,7 @@ class S(BaseHTTPRequestHandler):
         if self.path == '/':
 
             self.post_root(post_data)
-        elif self.path == '/save_entities':
+        elif self.path == consts.save_entities_route:
             self.post_save_entities(post_data)
         else:
             self.send_response(code=404)
@@ -49,7 +46,7 @@ class S(BaseHTTPRequestHandler):
     def get_users_preferences(self,records):
         contents = []
         for id, record in records.items():
-            res = requests.get(preference_db_url +'/get_user', params={'_id': id})
+            res = requests.get(consts.preference_db_url +consts.get_suer_route, params={'_id': id})
             content = res.content.decode('utf-8')
             if content == '-1': # no user found
                 continue
@@ -60,7 +57,7 @@ class S(BaseHTTPRequestHandler):
     def update_users_preferences(self, updated_users):
         for user in updated_users:
             logging.info('updating user: {}'.format(user))
-            res = requests.post(preference_db_url + '/set_user_sections_counter_and_preferences', json=user)
+            res = requests.post(consts.preference_db_url +consts.set_user_route, json=user)
             logging.info(res.content.decode('utf-8'))
 
     def post_root(self, post_data):
@@ -69,8 +66,6 @@ class S(BaseHTTPRequestHandler):
         new_records = model.trans_to_ids(json_data)
         old_preferences = self.get_users_preferences(new_records)
 
-        # change the records accordingly
-        # new_records = model.trans_to_ids(json_data)
 
         # update the user in th DB
         updated_users = model.update_users(old_preferences, new_records)

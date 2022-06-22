@@ -1,9 +1,9 @@
 import requests
-
+import consts
 import tokenizer
-yap_url = requests.get('https://nlp-proxy.herokuapp.com/get_url').json()['url']
-yap_url_route = yap_url + '/run_ncrf_model?model_name=token-multi'
-print(yap_url)
+nemo_url = requests.get(consts.nlp_proxy_url).json()['url']
+nemo_url_route = nemo_url + consts.nemo_route
+print(nemo_url)
 
 
 
@@ -11,7 +11,7 @@ def get_ner(reqs):
     text = []
     preds = []
     for req in reqs:
-        res = requests.post(url=yap_url_route, json=req)
+        res = requests.post(url=nemo_url_route, json=req)
         text.append(res.json()[0]['tokenized_text'])
         preds.append(res.json()[0]['ncrf_preds'])
 
@@ -21,12 +21,12 @@ def get_ner(reqs):
     return response
 
 def check_if_server_enabled():
-    global yap_url, yap_url_route
-    if requests.get(url=yap_url).status_code == 200:
+    global nemo_url, nemo_url_route
+    if requests.get(url=nemo_url).status_code == 200:
         return True
-    yap_url = requests.get('https://nlp-proxy.herokuapp.com/get_url').json()['url']
-    if requests.get(url=yap_url).status_code == 200:
-        yap_url_route = yap_url + '/run_ncrf_model?model_name=token-multi'
+    nemo_url = requests.get(consts.nlp_proxy_url).json()['url']
+    if requests.get(url=nemo_url).status_code == 200:
+        nemo_url_route = nemo_url + consts.nemo_route
         return True
 
 
