@@ -1,20 +1,14 @@
 import numpy as np
 import requests
 
+import consts
 import tokenizer
 
-scheme = 'url,id,section,time'
-sections = ["section section-blue", "section section-red", "section section-orange", "section section-grey", "section section-green"]
-SECTIONS_DICT = {section:i for i, section in enumerate(sections)}
-
-data_accumulator_url = 'http://limitless-sea-45427.herokuapp.com/informationrequest'
-# yap_url= 'http://localhost:8090/run_ncrf_model?model_name=token-multi'
-yap_url_route = '/run_ncrf_model?model_name=token-multi'
-yap_url = ''
+nemo_url = ''
 
 
 def make_random_transactions():
-    return [('url', np.random.randint(0, 10), np.random.choice(sections), t) for t in range(100)]
+    return [('url', np.random.randint(0, 10), np.random.choice(consts.sections), t) for t in range(100)]
 
 
 def trans_to_ids(trans):
@@ -23,8 +17,11 @@ def trans_to_ids(trans):
         id = t['id']
         if id not in trans_per_id.keys():
             trans_per_id[id] = []
-        trans_per_id[id].append((t['url'], t['section'], t['clicktime'],t.get('clickedheader','')))
+        tuple_id = tuple(t.get(section, '') for section in consts.sections)
+        trans_per_id[id].append(tuple_id)
+        # trans_per_id[id].append((t[consts.sections[0]], t[consts.sections[1]], t[consts.sections[2]],t.get(consts.sections[3],'')))
     return trans_per_id
+
 
 def update_preferences(user_record):
     counter = user_record['sections_counter']
@@ -33,37 +30,35 @@ def update_preferences(user_record):
     user_record['preferences'] = [int(preferences[i]) for i in range(len(preferences))]
     return user_record
 
+
 def check_if_server_enabled():
-    global yap_url
-    res_yap_url = requests.get('https://nlp-proxy.herokuapp.com/get_url')
-    if res_yap_url.status_code == 200:
-        yap_url = res_yap_url.json()['url']
+    global nemo_url
+    res_nemo_url = requests.get(consts.nlp_proxy_url)
+    if res_nemo_url.status_code == 200:
+        nemo_url = res_nemo_url.json()['url']
         return True
     return False
 
 
-
-
 def update_counter_and_ner(user_record, new_record):
-    ners = set(user_record.get('ner',[]))
+    ners = set(user_record.get('ner', []))
     server_is_enabled = check_if_server_enabled()
     for _, theme, _, text in new_record:
         if server_is_enabled:
             entities = get_entities_from_text(text)
             ners.update(entities)
-        index = SECTIONS_DICT[theme]
+        index = consts.SECTIONS_DICT[theme]
         user_record['sections_counter'][index] += 1
 
     user_record['ner'] = list(ners)
     return user_record
 
 
-
-
 def update_user(user_record, new_record):
     user_record = update_counter_and_ner(user_record, new_record)
     user_record = update_preferences(user_record)
     return user_record
+
 
 def update_users(old_records, new_records):
     updated_records = []
@@ -79,19 +74,17 @@ def get_transactions_from_db(k=10, **kwargs):
         if value is not None:
             request[key] = value
 
-    return requests.post(url=data_accumulator_url, json=request)
+    return requests.post(url=consts.data_accumulator_url, json=request)
 
 
 def get_ner(reqs):
     text = []
     preds = []
     for req in reqs:
-        # response.append(requests.post(url=data_accumulator_url, json=r))
-        res = requests.post(url=yap_url + yap_url_route, json=req)
+        res = requests.post(url=nemo_url + consts.nemo_route, json=req)
         text.append(res.json()[0]['tokenized_text'])
         preds.append(res.json()[0]['ncrf_preds'])
-        # response.append(res.json()[0])
-    # print(res.content.decode('utf-8'))
+
     text = [word for sublist in text for word in sublist]
     preds = [pred for sublist in preds for pred in sublist]
     response = {'tokens': text, 'preds': preds}
@@ -102,15 +95,13 @@ def get_req_for_ner(sentence):
     reqs = []
     sentence = sentence.split()
     sent = ''
-    for i,word in enumerate(sentence):
+    for i, word in enumerate(sentence):
         sent += word + ' '
         if i % 200 == 0 and i != 0:
             reqs.append({"sentences": sent, "tokenized": False})
             sent = ''
     if len(sent) > 0:
         reqs.append({"sentences": sent, "tokenized": False})
-    # reqs.append({"sentences": sent, "tokenized": False})
-    # req = {"sentences": sentence, "tokenized": False}
     return reqs
 
 
@@ -137,20 +128,10 @@ def tokenize_sentence(sentence):
     return sentence
 
 
-
-
-# text = 'לא הרבה יודעים, אבל כהנא צחק. '
 def get_entities_from_text(text):
-
     sentence = tokenize_sentence(text)
     reqs = get_req_for_ner(sentence)
     res_dict = get_ner(reqs)
     entities = get_entity_from_response(res_dict)
     # print(entities)
     return entities
-# entities = get_ner_from_text('לא הרבה יודעים אבל כהנא צחק')
-# print(entities)
-
-#
-# res = get_transactions_from_db(10,clickTime=None, url=None, domain=None, section=None, id=None)
-# print(res.content.decode('utf-8'))

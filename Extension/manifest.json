@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Newsflix",
-  "description": "This extension will Change Your Life",
-  "version": "1.1",
+  "name": "newsflix",
+  "description": "Sort sport5.co.il sections and articles according the user prefrences",
+  "version": "0.0.2",
   "permissions": ["storage"],
   "icons": {
     "16": "/images/world-news-16.png",
