@@ -1,6 +1,7 @@
 var id = null;
 var sections = ["section section-blue", "section section-red", "section section-orange", "section section-grey", "section section-green"];
 var main_order = [6, 5, 4, 3, 2, 1, 0];
+var ready_2_shuffle = false;
 
 /**
  *
@@ -83,8 +84,6 @@ function rearrangePage() {
     // after sections rearrangement, handle the inner  rearrangement of the main section
     rearrangeMainSection()
 }
-
-var ready_2_shuffle = false;
 
 function connectPreferncesServer(uid) {
     // console.log("******CONNECTING SERVER******")

@@ -7,15 +7,6 @@ app.use(express.json())
 app.use(cors())
 
 main_section_bag_of_words = []
-// main_section_bag_of_words = [
-//     ["אבטיח", "סתם שיט"],
-//     ["מלונית", "נרניה", "ארמדילו"],
-//     ["מצות", "אישטבח"],
-//     ["חצות", "טינהנהני"],
-//     ["ליברפול", "מצות", "כדורגל"],
-//     ["ליברפול", "מצות", "כדורגל"],
-//     ["ליברפול", "כדורגל"]
-// ]
 
 function countIntersections(a1, a2) {
     return a1.filter(function (n) {
