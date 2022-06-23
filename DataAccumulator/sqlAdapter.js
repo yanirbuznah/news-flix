@@ -48,10 +48,6 @@ function parsingRequestConditions(json){
         {
           s+=startAndEndTimeHandling(json)
         }
-        // else if (field.toString() == "id") !!!was in used before changing id filed - NEED TO BE TESTED
-        // {
-        //   s+=" AND " + field.toString()+" = "+json[field].toString() 
-        // }
         else
         {
           s+=" AND " + field.toString()+" = \'"+json[field].toString()+"\'"

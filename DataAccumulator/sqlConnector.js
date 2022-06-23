@@ -13,6 +13,7 @@ const credentials = {
 
 
 async function sendQueryToDB(q) {
+  //example of query:
   //"insert into click_table (id, url, section) values (15, 'ori', 'curie');"
   const client = new Client(credentials);
   await client.connect();
